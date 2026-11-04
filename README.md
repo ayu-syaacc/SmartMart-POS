@@ -11,7 +11,7 @@ Java-based supermarket Point of Sale (POS) system featuring intelligent budgetin
 **Cara Menjalankan**
 1. Pastikan JDK 21 dan NetBeans sudah terpasang.
 2. Clone repo:
-		git clone <url-repo>
+		git clone (https://github.com/ayu-syaacc/SmartMart-POS.git)
 3. Pindah ke branch develop:
 		git checkout develop
 4. Buka NetBeans, pilih File > Open Project, lalu pilih folder hasil clone.
