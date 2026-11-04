@@ -18,7 +18,7 @@ Java-based supermarket Point of Sale (POS) system featuring intelligent budgetin
 5. Klik kanan project > Reload POM agar dependency terunduh.
 6. Klik Run. File smartmart.db dibuat otomatis saat pertama kali aplikasi berjalan.
 
-###### **Aturan Kerja Tim**
+**Aturan Kerja Tim**
 1. Sebelum mulai bekerja, jalankan
    git pull origin develop
 2. Satu fitur dikerjakan satu orang. Hindari mengedit form Swing yang sama secara bersamaan.
