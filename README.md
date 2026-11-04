@@ -2,7 +2,6 @@
 Java-based supermarket Point of Sale (POS) system featuring intelligent budgeting, automated discounts, inventory management, and transaction reporting.
 	
 
-
 **Fitur Utama**
 1. Front office (kasir): ScanBarcode \& Search Product, POS Transaction, Transaction History, SmartReturn, SmartBudget, Member
 2. Back office (admin): ReceiveCheck (StokLot), LossGuard, FreshSave, StockAlert
@@ -13,16 +12,12 @@ Java-based supermarket Point of Sale (POS) system featuring intelligent budgetin
 **Cara Menjalankan**
 1. Pastikan JDK 21 dan NetBeans sudah terpasang.
 2. Clone repo:
-       git clone <url-repo>
-Pindah ke branch develop:
-   git checkout develop
-
-
-Buka NetBeans, pilih File > Open Project, lalu pilih folder hasil clone.
-
-Klik kanan project > Reload POM agar dependency terunduh.
-
-Klik Run. File smartmart.db dibuat otomatis saat pertama kali aplikasi berjalan.
+		git clone <url-repo>
+3. Pindah ke branch develop:
+		git checkout develop
+4. Buka NetBeans, pilih File > Open Project, lalu pilih folder hasil clone.
+5. Klik kanan project > Reload POM agar dependency terunduh.
+6. Klik Run. File smartmart.db dibuat otomatis saat pertama kali aplikasi berjalan.
 
 
 
