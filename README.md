@@ -1,28 +1,19 @@
-SmartMart-POS
-
+**SmartMart-POS**
 Java-based supermarket Point of Sale (POS) system featuring intelligent budgeting, automated discounts, inventory management, and transaction reporting.
+	
 
 
-
-Fitur Utama
-
-Front office (kasir): ScanBarcode \& Search Product, POS Transaction, Transaction History, SmartReturn, SmartBudget, Member
-
-Back office (admin): ReceiveCheck (StokLot), LossGuard, FreshSave, StockAlert
-
-Pengendalian transaksi: VoidGuard
-
-Manajemen: Login \& Role, SalesReport
+**Fitur Utama**
+1. Front office (kasir): ScanBarcode \& Search Product, POS Transaction, Transaction History, SmartReturn, SmartBudget, Member
+2. Back office (admin): ReceiveCheck (StokLot), LossGuard, FreshSave, StockAlert
+4. Pengendalian transaksi: VoidGuard
+5. Manajemen: Login \& Role, SalesReport
 
 
-Cara Menjalankan
-
-Pastikan JDK 21 dan NetBeans sudah terpasang.
-
-Clone repo:
-   git clone <url-repo>
-
-
+**Cara Menjalankan**
+1. Pastikan JDK 21 dan NetBeans sudah terpasang.
+2. Clone repo:
+       git clone <url-repo>
 Pindah ke branch develop:
    git checkout develop
 
