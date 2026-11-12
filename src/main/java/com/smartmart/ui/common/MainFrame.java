@@ -39,13 +39,20 @@ import com.smartmart.ui.admin.LogAktivitasPanel;
 import com.smartmart.ui.admin.PegawaiPanel;
 import com.smartmart.ui.admin.PersediaanPanel;
 import com.smartmart.ui.auth.Login;
-import com.smartmart.ui.kasir.TransaksiPanel;
+import com.smartmart.ui.kasir.KasirPosPage;
+import com.smartmart.ui.kasir.RiwayatTransaksiPanel;
+import com.smartmart.ui.kasir.StrukPanel;
+import com.smartmart.ui.kasir.UiKit;
+import com.smartmart.model.StrukData;
+import com.smartmart.service.PenjualanService;
+import javax.swing.JDialog;
 
 public class MainFrame extends JFrame {
 
     private final Pegawai pegawai;
     private final JPanel contentPanel;
     private final CardLayout cardLayout;
+    private RiwayatTransaksiPanel riwayatPanel;
     private final JPanel sidebar;
 
     private boolean darkMode = false;
@@ -736,11 +743,6 @@ public class MainFrame extends JFrame {
 
     private void showPage(String pageName) {
 
-        // Menu "Transaksi" dan "Kasir (POS)" memakai layar kasir yang sama.
-        if ("Transaksi".equals(pageName)) {
-            pageName = "Kasir (POS)";
-        }
-
         boolean pageExists = false;
 
         for (Component component :
@@ -766,10 +768,14 @@ public class MainFrame extends JFrame {
 
             } else if ("Kasir (POS)".equals(pageName)) {
 
-                page = new TransaksiPanel(
-                        new ProdukDAO(),
-                        SmartCart.tanpaLot()
-                );
+                page = new KasirPosPage(pegawai);
+
+            } else if ("Transaksi".equals(pageName)) {
+
+                riwayatPanel = new RiwayatTransaksiPanel();
+                riwayatPanel.setStrukListener(this::tampilkanStrukRiwayat);
+                page = new JPanel(new BorderLayout());
+                page.add(UiKit.bungkusScroll(riwayatPanel), BorderLayout.CENTER);
 
             } else if ("Pegawai".equals(pageName)) {
 
@@ -799,6 +805,58 @@ public class MainFrame extends JFrame {
                 contentPanel,
                 pageName
         );
+
+        // Riwayat dimuat ulang tiap dibuka agar transaksi terbaru langsung tampil.
+        if ("Transaksi".equals(pageName) && riwayatPanel != null) {
+            riwayatPanel.muat();
+        }
+    }
+
+    // Membuka struk transaksi lama dari halaman Transaksi (Riwayat).
+    private void tampilkanStrukRiwayat(String idTransaksi) {
+
+        try {
+
+            StrukData struk = new PenjualanService()
+                    .ambilStruk(Integer.parseInt(idTransaksi.trim()));
+
+            if (struk == null) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Data struk tidak ditemukan.",
+                        "Lihat Struk",
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                return;
+            }
+
+            JDialog dialog = new JDialog(
+                    this,
+                    "Struk " + struk.nomor,
+                    true
+            );
+
+            StrukPanel panel = new StrukPanel(struk, () -> {
+                dialog.dispose();
+                navigateTo("Kasir (POS)");
+            });
+
+            dialog.setContentPane(UiKit.bungkusScroll(panel));
+            dialog.setSize(960, 720);
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+
+        } catch (Exception ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Gagal membuka struk: " + ex.getMessage(),
+                    "Lihat Struk",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     // Berpindah halaman sekaligus menandai menu sidebar yang aktif.
@@ -1123,7 +1181,8 @@ public class MainFrame extends JFrame {
             // memiliki desain internal sendiri.
             if ("Pegawai".equals(pageName)
                     || "Log Aktivitas".equals(pageName)
-                    || "Kasir (POS)".equals(pageName)) {
+                    || "Kasir (POS)".equals(pageName)
+                    || "Transaksi".equals(pageName)) {
                 continue;
             }
 

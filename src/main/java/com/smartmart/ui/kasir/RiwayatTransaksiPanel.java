@@ -35,10 +35,15 @@ public class RiwayatTransaksiPanel extends javax.swing.JPanel {
         void voidTransaksi(String idTransaksi);
     }
 
+    public interface StrukListener {
+        void lihatStruk(String idTransaksi);
+    }
+
     private static final int[] LEBAR = {140, 50, 92, 88, 58, 92};
 
     private final RiwayatDAO dao = new RiwayatDAO();
     private AksiListener listener;
+    private StrukListener strukListener;
     private boolean modeContoh;
     private List<RiwayatDAO.Baris> contohSemua = new ArrayList<RiwayatDAO.Baris>();
     private final Map<String, List<RiwayatDAO.Item>> contohItem = new HashMap<String, List<RiwayatDAO.Item>>();
@@ -57,6 +62,8 @@ public class RiwayatTransaksiPanel extends javax.swing.JPanel {
     }
 
     public void setAksiListener(AksiListener l) { listener = l; }
+
+    public void setStrukListener(StrukListener l) { strukListener = l; }
 
     public void muat() {
         modeContoh = false;
@@ -130,10 +137,17 @@ public class RiwayatTransaksiPanel extends javax.swing.JPanel {
         pnlDetailAtas.add(javax.swing.Box.createVerticalStrut(14), 6);
         UiKit.susunVertikal(pnlDetailAtas);
 
+        btnStruk.setPreferredSize(new Dimension(100, 52));
         btnRetur.setPreferredSize(new Dimension(100, 52));
         btnVoid.setPreferredSize(new Dimension(100, 52));
         pnlAksi.add(javax.swing.Box.createVerticalStrut(12), 1);
-        pnlAksi.add(javax.swing.Box.createVerticalStrut(14), 3);
+        pnlAksi.add(javax.swing.Box.createVerticalStrut(12), 3);
+        pnlAksi.add(javax.swing.Box.createVerticalStrut(14), 5);
+        btnStruk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                if (terpilih != null && strukListener != null) strukListener.lihatStruk(terpilih.id);
+            }
+        });
         UiKit.susunVertikal(pnlAksi);
         btnRetur.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -293,6 +307,7 @@ public class RiwayatTransaksiPanel extends javax.swing.JPanel {
             lblTotal.setText(" ");
             lblMetode.setText(" ");
             lblPoin.setText(" ");
+            btnStruk.setEnabled(false);
             btnRetur.setEnabled(false);
             btnVoid.setEnabled(false);
             UiKit.susunVertikal(pnlDetailAtas);
@@ -319,6 +334,7 @@ public class RiwayatTransaksiPanel extends javax.swing.JPanel {
         }
         UiKit.susunVertikal(pnlItem);
         boolean selesai = "SELESAI".equals(t.status);
+        btnStruk.setEnabled(true);
         btnRetur.setEnabled(selesai);
         btnVoid.setEnabled(selesai);
         UiKit.susunVertikal(pnlDetailAtas);
@@ -438,6 +454,7 @@ public class RiwayatTransaksiPanel extends javax.swing.JPanel {
         lblPoinT = new javax.swing.JLabel();
         lblPoin = new javax.swing.JLabel();
         pnlAksi = new javax.swing.JPanel();
+        btnStruk = new com.smartmart.ui.kasir.UiKit.RoundButton("Lihat Struk", com.smartmart.ui.kasir.UiKit.Ikon.DOC, com.smartmart.ui.kasir.UiKit.GRAY_SOFT, com.smartmart.ui.kasir.UiKit.TEXT, null);
         btnRetur = com.smartmart.ui.kasir.UiKit.tombolHijau("Ajukan Retur", com.smartmart.ui.kasir.UiKit.Ikon.UNDO);
         btnVoid = com.smartmart.ui.kasir.UiKit.tombolOutlineMerah("Void Transaksi", com.smartmart.ui.kasir.UiKit.Ikon.TRASH);
         pnlNote = com.smartmart.ui.kasir.UiKit.catatanKuning("VoidGuard", "Setelah dibayar: wajib alasan dan password admin, hanya hari yang sama. Transaksi yang sudah diretur tidak dapat di-void.", false, 232);
@@ -557,6 +574,7 @@ public class RiwayatTransaksiPanel extends javax.swing.JPanel {
         pnlDetail.add(pnlDetailAtas, java.awt.BorderLayout.NORTH);
 
         pnlAksi.setLayout(new javax.swing.BoxLayout(pnlAksi, javax.swing.BoxLayout.PAGE_AXIS));
+        pnlAksi.add(btnStruk);
         pnlAksi.add(btnRetur);
 
         pnlAksi.add(btnVoid);
@@ -602,6 +620,7 @@ public class RiwayatTransaksiPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel badgeStatus;
     private javax.swing.JPanel barInfo;
+    private javax.swing.JButton btnStruk;
     private javax.swing.JButton btnRetur;
     private javax.swing.JButton btnVoid;
     private javax.swing.JToggleButton chipDibatalkan;
