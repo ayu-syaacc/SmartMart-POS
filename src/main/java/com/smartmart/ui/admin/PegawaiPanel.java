@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.smartmart.model.Pegawai;
 import com.smartmart.service.PegawaiService;
+import com.smartmart.service.LogAktivitasService;
 
 public class PegawaiPanel extends JPanel {
 
@@ -210,6 +211,15 @@ public class PegawaiPanel extends JPanel {
                     (String) peranCombo.getSelectedItem()
             );
 
+            catatAktivitas(
+        "TAMBAH_PEGAWAI",
+        "Menambahkan pegawai: " + namaField.getText().trim()
+                + " dengan username "
+                + usernameField.getText().trim()
+                + " dan peran "
+                + peranCombo.getSelectedItem()
+);
+
             JOptionPane.showMessageDialog(
                     this,
                     "Pegawai berhasil ditambahkan."
@@ -297,6 +307,16 @@ public class PegawaiPanel extends JPanel {
                     (String) peranCombo.getSelectedItem()
             );
 
+            // Catat aktivitas edit pegawai
+catatAktivitas(
+        "UBAH_PEGAWAI",
+        "Memperbarui data pegawai ID " + idPegawai
+                + ". Nama baru: " + namaField.getText().trim()
+                + ", username baru: "
+                + usernameField.getText().trim()
+                + ", peran baru: " + peranCombo.getSelectedItem()
+);
+
             JOptionPane.showMessageDialog(
                     this,
                     "Data pegawai berhasil diperbarui."
@@ -371,6 +391,13 @@ public class PegawaiPanel extends JPanel {
         try {
 
             pegawaiService.ubahStatus(idPegawai, statusBaru);
+            // Catat aktivitas perubahan status pegawai
+catatAktivitas(
+        "UBAH_STATUS_PEGAWAI",
+        "Mengubah status pegawai " + nama
+                + " menjadi "
+                + (statusBaru ? "Aktif" : "Nonaktif")
+);
 
             JOptionPane.showMessageDialog(
                     this,
@@ -389,4 +416,22 @@ public class PegawaiPanel extends JPanel {
             );
         }
     }
+
+   
+// Mencatat aktivitas Admin
+private void catatAktivitas(String aksi, String keterangan) {
+
+    try {
+        new LogAktivitasService().catatAktivitas(
+                penggunaLogin.getIdPegawai(),
+                aksi,
+                keterangan
+        );
+    } catch (Exception e) {
+        System.err.println(
+                "Gagal mencatat aktivitas: " + e.getMessage()
+        );
+    }
+}
+    
 }

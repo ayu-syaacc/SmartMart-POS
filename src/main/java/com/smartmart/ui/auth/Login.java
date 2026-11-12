@@ -31,6 +31,7 @@ import javax.swing.SwingUtilities;
 
 import com.smartmart.model.Pegawai;
 import com.smartmart.service.AuthService;
+import com.smartmart.service.LogAktivitasService;
 import com.smartmart.ui.common.MainFrame;
 
 public class Login extends JFrame {
@@ -538,6 +539,20 @@ public class Login extends JFrame {
             }
 
             Pegawai pegawai = result.get();
+
+            // Mencatat aktivitas login
+        try {
+        new LogAktivitasService().catatAktivitas(
+                pegawai.getIdPegawai(),
+                "LOGIN",
+                "Pegawai berhasil login ke sistem."
+        );
+        } catch (Exception logError) {
+        System.err.println(
+                "Gagal mencatat aktivitas login: "
+                        + logError.getMessage()
+        );
+        }
 
             // Memastikan peran sesuai pilihan pada form login
             if (!selectedRole.equalsIgnoreCase(pegawai.getPeran())) {

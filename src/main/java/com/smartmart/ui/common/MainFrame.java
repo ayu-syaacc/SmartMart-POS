@@ -20,6 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.smartmart.model.Pegawai;
+import com.smartmart.service.LogAktivitasService;
+import com.smartmart.ui.admin.LogAktivitasPanel;
 import com.smartmart.ui.admin.PegawaiPanel;
 import com.smartmart.ui.auth.Login;
 
@@ -154,9 +156,9 @@ public class MainFrame extends JFrame {
             addMenu(panel, "LossGuard");
             addMenu(panel, "FreshSave");
             addMenu(panel, "Laporan");
-            addMenu(panel, "Pegawai");
-            addMenu(panel, "Pengaturan");
-
+        addMenu(panel, "Pegawai");
+        addMenu(panel, "Log Aktivitas");
+        addMenu(panel, "Pengaturan");
         } else if ("KASIR".equalsIgnoreCase(peran)) {
 
             addMenu(panel, "Dashboard");
@@ -222,6 +224,10 @@ public class MainFrame extends JFrame {
         } else if ("Pegawai".equals(pageName)) {
 
         page = new PegawaiPanel(pegawai);
+
+        } else if ("Log Aktivitas".equals(pageName)) {
+
+        page = new LogAktivitasPanel(pegawai);
 
         } else {
 
@@ -386,22 +392,37 @@ public class MainFrame extends JFrame {
     }
 
     // Proses logout
-    private void logout() {
+    // Proses logout
+private void logout() {
 
-        int confirmation = JOptionPane.showConfirmDialog(
-                this,
-                "Apakah Anda yakin ingin keluar dari akun?",
-                "Konfirmasi Logout",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
+    int confirmation = JOptionPane.showConfirmDialog(
+            this,
+            "Apakah Anda yakin ingin keluar dari akun?",
+            "Konfirmasi Logout",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+    );
 
-        if (confirmation == JOptionPane.YES_OPTION) {
+    if (confirmation == JOptionPane.YES_OPTION) {
 
-            Login login = new Login();
-            login.setVisible(true);
-
-            dispose();
+        // Mencatat aktivitas logout
+        try {
+            new LogAktivitasService().catatAktivitas(
+                    pegawai.getIdPegawai(),
+                    "LOGOUT",
+                    "Pegawai berhasil logout dari sistem."
+            );
+        } catch (Exception logError) {
+            System.err.println(
+                    "Gagal mencatat aktivitas logout: "
+                            + logError.getMessage()
+            );
         }
+
+        Login login = new Login();
+        login.setVisible(true);
+
+        dispose();
     }
+}
 }
