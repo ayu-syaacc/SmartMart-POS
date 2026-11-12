@@ -1,10 +1,10 @@
-package com.smartmart.model;
-
-// Pengecekan manual (bukan JUnit): jalankan main() dan lihat OK/GAGAL. Angka diambil dari mockup.
-// Branch: feature/smartcart-core
+package com.smartmart;
 
 import java.util.Arrays;
 import java.util.Collections;
+
+import com.smartmart.model.Produk;
+import com.smartmart.model.SmartCart;
 
 public class SmartCartCek {
     static int gagal = 0;
