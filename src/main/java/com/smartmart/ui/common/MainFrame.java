@@ -45,23 +45,22 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Membuat header
         add(createHeader(), BorderLayout.NORTH);
 
-        // Membuat sidebar
         sidebar = createSidebar();
         add(sidebar, BorderLayout.WEST);
 
-        // Membuat area konten
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
         contentPanel.setBackground(LIGHT_BACKGROUND);
 
-        // Menambahkan halaman awal
-        contentPanel.add(
-                createPage("Dashboard", "Selamat datang di SmartMart POS"),
-                "Dashboard"
+        JPanel dashboard = createPage(
+                "Dashboard",
+                "Selamat datang di SmartMart POS"
         );
+
+        dashboard.setName("Dashboard");
+        contentPanel.add(dashboard, "Dashboard");
 
         add(contentPanel, BorderLayout.CENTER);
 
@@ -72,6 +71,7 @@ public class MainFrame extends JFrame {
     private JPanel createHeader() {
 
         JPanel header = new JPanel(new BorderLayout());
+
         header.setBackground(SIDEBAR_COLOR);
         header.setBorder(
                 BorderFactory.createEmptyBorder(15, 20, 15, 20)
@@ -92,6 +92,7 @@ public class MainFrame extends JFrame {
         themeButton.addActionListener(e -> toggleTheme());
 
         JButton logoutButton = new JButton("Logout");
+
         logoutButton.setForeground(Color.WHITE);
         logoutButton.setBackground(new Color(190, 65, 65));
         logoutButton.setFocusPainted(false);
@@ -99,13 +100,14 @@ public class MainFrame extends JFrame {
         logoutButton.setCursor(
                 new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)
         );
+
         logoutButton.addActionListener(e -> logout());
 
         JPanel rightPanel = new JPanel(
                 new FlowLayout(FlowLayout.RIGHT, 10, 0)
         );
-        rightPanel.setOpaque(false);
 
+        rightPanel.setOpaque(false);
         rightPanel.add(userInfo);
         rightPanel.add(themeButton);
         rightPanel.add(logoutButton);
@@ -120,16 +122,20 @@ public class MainFrame extends JFrame {
     private JPanel createSidebar() {
 
         JPanel panel = new JPanel();
+
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(SIDEBAR_COLOR);
         panel.setPreferredSize(new Dimension(220, 0));
+
         panel.setBorder(
                 BorderFactory.createEmptyBorder(20, 10, 20, 10)
         );
 
         JLabel menuTitle = new JLabel("MENU NAVIGASI");
+
         menuTitle.setForeground(Color.WHITE);
         menuTitle.setFont(new Font("Arial", Font.BOLD, 14));
+
         menuTitle.setBorder(
                 BorderFactory.createEmptyBorder(0, 10, 15, 0)
         );
@@ -180,6 +186,7 @@ public class MainFrame extends JFrame {
         button.setFocusPainted(false);
         button.setForeground(Color.WHITE);
         button.setBackground(SIDEBAR_COLOR);
+
         button.setBorder(
                 BorderFactory.createEmptyBorder(10, 15, 10, 10)
         );
@@ -205,10 +212,20 @@ public class MainFrame extends JFrame {
 
         if (!pageExists) {
 
-            JPanel page = createPage(
-                    pageName,
-                    "Halaman " + pageName + " sedang dalam pengembangan."
-            );
+            JPanel page;
+
+            if ("SmartReturn".equals(pageName)) {
+
+                page = createSmartReturnPage();
+
+            } else {
+
+                page = createPage(
+                        pageName,
+                        "Halaman " + pageName
+                                + " sedang dalam pengembangan."
+                );
+            }
 
             page.setName(pageName);
             contentPanel.add(page, pageName);
@@ -217,27 +234,121 @@ public class MainFrame extends JFrame {
         cardLayout.show(contentPanel, pageName);
     }
 
-    // Membuat tampilan halaman sementara
-    private JPanel createPage(String title, String description) {
+    // Membuat halaman SmartReturn
+    private JPanel createSmartReturnPage() {
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setName(title);
+
+        panel.setName("SmartReturn");
+
         panel.setBackground(
                 darkMode ? DARK_BACKGROUND : LIGHT_BACKGROUND
         );
 
         JPanel information = new JPanel();
+
         information.setOpaque(false);
+
+        information.setLayout(
+                new BoxLayout(information, BoxLayout.Y_AXIS)
+        );
+
+        JLabel titleLabel = new JLabel("SMART RETURN");
+
+        titleLabel.setFont(
+                new Font("Arial", Font.BOLD, 28)
+        );
+
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel descriptionLabel = new JLabel(
+                "Fitur pengembalian barang dan otorisasi Admin."
+        );
+
+        descriptionLabel.setFont(
+                new Font("Arial", Font.PLAIN, 16)
+        );
+
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton authorizationButton = new JButton(
+                "Uji Otorisasi Admin"
+        );
+
+        authorizationButton.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        authorizationButton.addActionListener(e -> {
+
+            Pegawai admin = AdminAuthorizationDialog
+                    .mintaOtorisasi(this);
+
+            if (admin != null) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Otorisasi berhasil diberikan oleh Admin: "
+                                + admin.getNama(),
+                        "Otorisasi Berhasil",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Otorisasi dibatalkan atau ditolak.",
+                        "Otorisasi Gagal",
+                        JOptionPane.WARNING_MESSAGE
+                );
+            }
+        });
+
+        information.add(titleLabel);
+        information.add(Box.createVerticalStrut(10));
+        information.add(descriptionLabel);
+        information.add(Box.createVerticalStrut(25));
+        information.add(authorizationButton);
+
+        panel.add(information);
+
+        return panel;
+    }
+
+    // Membuat tampilan halaman sementara
+    private JPanel createPage(String title, String description) {
+
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        panel.setName(title);
+
+        panel.setBackground(
+                darkMode ? DARK_BACKGROUND : LIGHT_BACKGROUND
+        );
+
+        JPanel information = new JPanel();
+
+        information.setOpaque(false);
+
         information.setLayout(
                 new BoxLayout(information, BoxLayout.Y_AXIS)
         );
 
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
+
+        titleLabel.setFont(
+                new Font("Arial", Font.BOLD, 28)
+        );
+
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel descriptionLabel = new JLabel(description);
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        descriptionLabel.setFont(
+                new Font("Arial", Font.PLAIN, 16)
+        );
+
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         information.add(titleLabel);
@@ -263,10 +374,6 @@ public class MainFrame extends JFrame {
         for (Component component : contentPanel.getComponents()) {
 
             component.setBackground(background);
-
-            if (component instanceof JPanel page) {
-                page.setBackground(background);
-            }
         }
 
         contentPanel.repaint();
