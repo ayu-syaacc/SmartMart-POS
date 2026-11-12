@@ -162,4 +162,29 @@ public class ProdukDAO {
                 rs.getInt("dapat_diretur") == 1,
                 rs.getInt("aktif") == 1);
     }
+
+
+    /**
+     * Menghitung total stok aktual berdasarkan seluruh lot produk.
+     * Mengembalikan 0 jika produk belum memiliki stok lot.
+     */
+    public int hitungStok(String kodeBarang) throws SQLException {
+        String sql = "SELECT COALESCE(SUM(jumlah_sisa), 0) "
+                   + "FROM stok_lot WHERE kode_barang = ?";
+
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, kodeBarang);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+
+        return 0;
+    }
+
 }
