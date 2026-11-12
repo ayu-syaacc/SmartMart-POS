@@ -52,6 +52,8 @@ public final class UiKit {
     public static final Color AMBER_TEXT = new Color(0x92400E);
     public static final Color ORANGE_BG = new Color(0xFFE9D6);
     public static final Color ORANGE_TEXT = new Color(0xC45D15);
+    public static final Color BLUE = new Color(0x1D6FB8);
+    public static final Color AMBER = new Color(0xF59E0B);
     public static final Color BLUE_BG = new Color(0xE3F0FB);
     public static final Color BLUE_TEXT = new Color(0x1D6FB8);
     public static final Color HEADER_BG = new Color(0xEEF3F0);

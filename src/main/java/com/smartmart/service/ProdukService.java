@@ -28,7 +28,7 @@ public class ProdukService {
             );
         }
 
-        return produkDAO.cariKode(kodeBarang.trim());
+        return produkDAO.ambilByKode(kodeBarang.trim());
     }
 
     // Mencari produk berdasarkan nama.
@@ -60,7 +60,7 @@ public class ProdukService {
 
         String kodeBersih = kodeBarang.trim();
 
-        if (produkDAO.cariKode(kodeBersih) != null) {
+        if (produkDAO.ambilByKode(kodeBersih) != null) {
             throw new IllegalArgumentException(
                     "Kode barang sudah digunakan."
             );
@@ -106,7 +106,7 @@ public class ProdukService {
         String kodeBaru = kodeBarang.trim();
         String kodeSebelumnya = kodeLama.trim();
 
-        Produk ditemukan = produkDAO.cariKode(kodeSebelumnya);
+        Produk ditemukan = produkDAO.ambilByKode(kodeSebelumnya);
 
         if (ditemukan == null) {
             throw new IllegalArgumentException(
@@ -115,7 +115,7 @@ public class ProdukService {
         }
 
         if (!kodeBaru.equals(kodeSebelumnya)
-                && produkDAO.cariKode(kodeBaru) != null) {
+                && produkDAO.ambilByKode(kodeBaru) != null) {
             throw new IllegalArgumentException(
                     "Kode barang sudah digunakan produk lain."
             );
@@ -142,7 +142,7 @@ public class ProdukService {
             );
         }
 
-        Produk produk = produkDAO.cariKode(kodeBarang.trim());
+        Produk produk = produkDAO.ambilByKode(kodeBarang.trim());
 
         if (produk == null) {
             throw new IllegalArgumentException(

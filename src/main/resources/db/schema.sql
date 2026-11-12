@@ -24,7 +24,9 @@ CREATE TABLE IF NOT EXISTS produk (
     harga INTEGER NOT NULL CHECK (harga >= 0),
     satuan TEXT NOT NULL,
     stok_minimum INTEGER NOT NULL DEFAULT 0,
-    dapat_diretur INTEGER NOT NULL DEFAULT 1 CHECK (dapat_diretur IN (0, 1))
+    dapat_diretur INTEGER NOT NULL DEFAULT 1 CHECK (dapat_diretur IN (0, 1)),
+    kategori TEXT NOT NULL DEFAULT 'Lainnya',
+    aktif INTEGER NOT NULL DEFAULT 1 CHECK (aktif IN (0, 1))
 );
 
 -- 3. TABEL SUPPLIER

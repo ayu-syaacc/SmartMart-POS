@@ -13,6 +13,8 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -28,12 +30,17 @@ import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
 
+import com.smartmart.dao.ProdukDAO;
 import com.smartmart.model.Pegawai;
+import com.smartmart.model.SmartCart;
 import com.smartmart.service.LogAktivitasService;
+import com.smartmart.ui.admin.DashboardAdminPanel;
 import com.smartmart.ui.admin.LogAktivitasPanel;
 import com.smartmart.ui.admin.PegawaiPanel;
 import com.smartmart.ui.admin.PersediaanPanel;
 import com.smartmart.ui.auth.Login;
+import com.smartmart.ui.kasir.TransaksiPanel;
+
 public class MainFrame extends JFrame {
 
     private final Pegawai pegawai;
@@ -43,6 +50,9 @@ public class MainFrame extends JFrame {
 
     private boolean darkMode = false;
     private JButton activeButton;
+
+    // Tombol sidebar menurut nama menu, dipakai untuk berpindah halaman dari dalam dashboard.
+    private final Map<String, JButton> menuButtons = new HashMap<>();
 
     // ==========================================
     // PALET WARNA SMARTMART
@@ -103,10 +113,19 @@ public class MainFrame extends JFrame {
         contentPanel = new JPanel(cardLayout);
         contentPanel.setBackground(LIGHT_BACKGROUND);
 
-        JPanel dashboard = createPage(
-                "Dashboard",
-                "Selamat datang di SmartMart POS"
-        );
+        JPanel dashboard;
+
+        if ("ADMIN".equalsIgnoreCase(pegawai.getPeran())) {
+
+            dashboard = new DashboardAdminPanel(this::navigateTo);
+
+        } else {
+
+            dashboard = createPage(
+                    "Dashboard",
+                    "Selamat datang di SmartMart POS"
+            );
+        }
 
         dashboard.setName("Dashboard");
 
@@ -677,6 +696,8 @@ public class MainFrame extends JFrame {
                 }
         );
 
+        menuButtons.put(menuName, button);
+
         // Navigasi dan menu aktif
         button.addActionListener(e -> {
 
@@ -715,6 +736,11 @@ public class MainFrame extends JFrame {
 
     private void showPage(String pageName) {
 
+        // Menu "Transaksi" dan "Kasir (POS)" memakai layar kasir yang sama.
+        if ("Transaksi".equals(pageName)) {
+            pageName = "Kasir (POS)";
+        }
+
         boolean pageExists = false;
 
         for (Component component :
@@ -734,11 +760,18 @@ public class MainFrame extends JFrame {
 
                 page = createSmartReturnPage();
 
-            }  else if ("Persediaan".equals(pageName)) {
+            } else if ("Persediaan".equals(pageName)) {
 
                 page = new PersediaanPanel(pegawai);
 
-                } else if ("Pegawai".equals(pageName)) {
+            } else if ("Kasir (POS)".equals(pageName)) {
+
+                page = new TransaksiPanel(
+                        new ProdukDAO(),
+                        SmartCart.tanpaLot()
+                );
+
+            } else if ("Pegawai".equals(pageName)) {
 
                 page = new PegawaiPanel(pegawai);
                 } else if ("Log Aktivitas".equals(pageName)) {
@@ -766,6 +799,21 @@ public class MainFrame extends JFrame {
                 contentPanel,
                 pageName
         );
+    }
+
+    // Berpindah halaman sekaligus menandai menu sidebar yang aktif.
+    private void navigateTo(String menuName) {
+
+        JButton button = menuButtons.get(menuName);
+
+        if (button != null) {
+
+            button.doClick();
+
+        } else {
+
+            showPage(menuName);
+        }
     }
 
     // ==========================================
@@ -1066,10 +1114,16 @@ public class MainFrame extends JFrame {
 
             String pageName = component.getName();
 
+            // Dashboard Admin memiliki desain internal sendiri.
+            if (component instanceof DashboardAdminPanel) {
+                continue;
+            }
+
             // Panel Pegawai dan Log Aktivitas
             // memiliki desain internal sendiri.
             if ("Pegawai".equals(pageName)
-                    || "Log Aktivitas".equals(pageName)) {
+                    || "Log Aktivitas".equals(pageName)
+                    || "Kasir (POS)".equals(pageName)) {
                 continue;
             }
 

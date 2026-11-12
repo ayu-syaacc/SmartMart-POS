@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
+import com.smartmart.dao.LaporanDAO;
+
 public final class laporanPenjualan extends javax.swing.JFrame {
 
     public LaporanDAO laporanDAO = new LaporanDAO();
