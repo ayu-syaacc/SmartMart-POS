@@ -18,17 +18,20 @@ public class AuthService {
         this.pegawaiDAO = new PegawaiDAO();
     }
 
+    /**
+     * Memvalidasi login pegawai berdasarkan username dan password.
+     */
     public Optional<Pegawai> login(String username, String password)
             throws SQLException, NoSuchAlgorithmException,
             InvalidKeySpecException {
 
-        // Memeriksa input kosong
+        // Memeriksa input kosong.
         if (username == null || username.isBlank()
                 || password == null || password.isEmpty()) {
             return Optional.empty();
         }
 
-        // Mencari pegawai berdasarkan username
+        // Mencari pegawai berdasarkan username.
         Optional<Pegawai> result =
                 pegawaiDAO.findByUsername(username.trim());
 
@@ -38,12 +41,12 @@ public class AuthService {
 
         Pegawai pegawai = result.get();
 
-        // Memastikan akun masih aktif
+        // Memastikan akun masih aktif.
         if (!pegawai.isAktif()) {
             return Optional.empty();
         }
 
-        // Memeriksa password menggunakan hash dan salt
+        // Memeriksa password menggunakan hash dan salt.
         boolean passwordValid = PasswordUtil.verifyPassword(
                 password,
                 pegawai.getSalt(),
@@ -54,7 +57,36 @@ public class AuthService {
             return Optional.empty();
         }
 
-        // Login berhasil
+        // Login berhasil.
+        return Optional.of(pegawai);
+    }
+
+    /**
+     * Memvalidasi otorisasi khusus Admin.
+     * Hanya pegawai aktif dengan role ADMIN
+     * dan password yang benar yang dapat memperoleh otorisasi.
+     */
+    public Optional<Pegawai> authorizeAdmin(
+            String username,
+            String password)
+            throws SQLException, NoSuchAlgorithmException,
+            InvalidKeySpecException {
+
+        // Memvalidasi username dan password terlebih dahulu.
+        Optional<Pegawai> result = login(username, password);
+
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Pegawai pegawai = result.get();
+
+        // Memastikan pegawai memiliki role ADMIN.
+        if (!"ADMIN".equalsIgnoreCase(pegawai.getPeran())) {
+            return Optional.empty();
+        }
+
+        // Otorisasi Admin berhasil.
         return Optional.of(pegawai);
     }
 }
