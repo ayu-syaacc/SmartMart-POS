@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.smartmart.model.Pegawai;
+import com.smartmart.ui.admin.PegawaiPanel;
 import com.smartmart.ui.auth.Login;
 
 public class MainFrame extends JFrame {
@@ -216,16 +217,20 @@ public class MainFrame extends JFrame {
 
             if ("SmartReturn".equals(pageName)) {
 
-                page = createSmartReturnPage();
+        page = createSmartReturnPage();
 
-            } else {
+        } else if ("Pegawai".equals(pageName)) {
 
-                page = createPage(
-                        pageName,
-                        "Halaman " + pageName
-                                + " sedang dalam pengembangan."
-                );
-            }
+        page = new PegawaiPanel(pegawai);
+
+        } else {
+
+        page = createPage(
+                pageName,
+                "Halaman " + pageName
+                        + " sedang dalam pengembangan."
+        );
+}
 
             page.setName(pageName);
             contentPanel.add(page, pageName);
