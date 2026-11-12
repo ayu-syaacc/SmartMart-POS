@@ -11,19 +11,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ReturService {
 
-    /** Hasil retur yang berhasil disimpan. */
     public static class Hasil {
         public long idRetur;
         public int refund;
         public int poinDikurangi;
-        public int barangMasukStok;   // jumlah baris yang kembali ke lot asal
-        public int barangRusak;       // jumlah baris dicatat sebagai RUSAK
+        public int barangMasukStok;
+        public int barangRusak;
     }
 
-    /** Retur ditolak oleh validasi otomatis. */
     public static class DitolakException extends Exception {
         private static final long serialVersionUID = 1L;
         private final List<String> pesan;
@@ -38,7 +35,6 @@ public class ReturService {
 
     private final ReturDAO dao = new ReturDAO();
 
-    
     public Retur siapkan(String idTransaksi) throws SQLException {
         Connection c = ReturDAO.buka();
         try {
@@ -48,12 +44,10 @@ public class ReturService {
         }
     }
 
- 
     public List<String> validasi(Retur r) {
         return r.validasi(LocalDate.now());
     }
 
-    
     public Hasil proses(Retur input, int idKasir, int idAdmin) throws SQLException, DitolakException {
         Connection c = ReturDAO.buka();
         try {
@@ -79,7 +73,6 @@ public class ReturService {
 
     private Hasil prosesDiDalam(Connection c, Retur input, int idKasir, int idAdmin)
             throws SQLException, DitolakException {
-        // Muat ulang dari database supaya sisa retur dan status selalu terbaru.
         Retur r = dao.ambilTransaksi(c, input.getIdTransaksi() == null ? "" : input.getIdTransaksi().trim());
         if (r == null) {
             List<String> p = new ArrayList<String>();
@@ -124,13 +117,11 @@ public class ReturService {
             }
         }
 
-       
         h.poinDikurangi = r.hitungPoinDikurangi();
         if (r.getIdMember() != null && h.poinDikurangi > 0) {
             OperasiDAO.ubahPoin(c, r.getIdMember().longValue(), -h.poinDikurangi);
         }
 
-       
         OperasiDAO.catatAktivitas(c, idKasir, "RETUR",
                 r.getIdTransaksi() + " | refund Rp" + h.refund + " | alasan: " + r.getAlasan()
                 + " | admin penyetuju: " + idAdmin);
