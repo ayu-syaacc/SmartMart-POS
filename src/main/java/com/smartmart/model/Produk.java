@@ -1,60 +1,148 @@
+
 package com.smartmart.model;
 
 /**
- * Data produk (branch: feature/product-model).
- * Harga disimpan dalam Rupiah bulat (long). Untuk produk perKg, harga adalah harga per kg.
+ * Model data produk SmartMart.
+ * Struktur atribut disesuaikan dengan tabel produk pada schema.sql.
  */
 public class Produk {
-    private int id;
-    private String kode;        // kode barcode
+
+    private String kodeBarang;
     private String nama;
-    private String kategori;    // Minuman, Makanan, Segar, Susu, Lainnya
+    private String satuan;
     private long harga;
-    private boolean perKg;
     private int stokMinimum;
-    private boolean aktif = true;
+    private boolean dapatDiretur;
+
+    // Kompatibilitas sementara untuk SmartCart versi lama.
+private int legacyId;
+
+    // Stok merupakan hasil perhitungan dari tabel stok_lot.
+    private double stok;
+
+    /**
+ * Konstruktor kompatibilitas untuk pengujian SmartCart versi lama.
+ * Kategori belum digunakan dalam skema produk yang baru.
+ */
+@Deprecated
+public Produk(
+        int id,
+        String kode,
+        String nama,
+        String kategori,
+        long harga,
+        boolean perKg,
+        int stokMinimum,
+        boolean aktif
+) {
+    this(
+        kode,
+        nama,
+        harga,
+        perKg ? "kg" : "pcs",
+        stokMinimum,
+        true
+    );
+
+    this.legacyId = id;
+}
 
     public Produk() {
     }
 
-    public Produk(int id, String kode, String nama, String kategori, long harga,
-                  boolean perKg, int stokMinimum, boolean aktif) {
-        this.id = id;
-        this.kode = kode;
+    public Produk(
+            String kodeBarang,
+            String nama,
+            long harga,
+            String satuan,
+            int stokMinimum,
+            boolean dapatDiretur
+    ) {
+        this.kodeBarang = kodeBarang;
         this.nama = nama;
-        this.kategori = kategori;
         this.harga = harga;
-        this.perKg = perKg;
+        this.satuan = satuan;
         this.stokMinimum = stokMinimum;
-        this.aktif = aktif;
+        this.dapatDiretur = dapatDiretur;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public String getKodeBarang() {
+        return kodeBarang;
+    }
 
-    public String getKode() { return kode; }
-    public void setKode(String kode) { this.kode = kode; }
+    public void setKodeBarang(String kodeBarang) {
+        this.kodeBarang = kodeBarang;
+    }
 
-    public String getNama() { return nama; }
-    public void setNama(String nama) { this.nama = nama; }
+    public String getNama() {
+        return nama;
+    }
 
-    public String getKategori() { return kategori; }
-    public void setKategori(String kategori) { this.kategori = kategori; }
+    public void setNama(String nama) {
+        this.nama = nama;
+    }
 
-    public long getHarga() { return harga; }
-    public void setHarga(long harga) { this.harga = harga; }
+    public long getHarga() {
+        return harga;
+    }
 
-    public boolean isPerKg() { return perKg; }
-    public void setPerKg(boolean perKg) { this.perKg = perKg; }
+    public void setHarga(long harga) {
+        this.harga = harga;
+    }
 
-    public int getStokMinimum() { return stokMinimum; }
-    public void setStokMinimum(int stokMinimum) { this.stokMinimum = stokMinimum; }
+    public String getSatuan() {
+        return satuan;
+    }
 
-    public boolean isAktif() { return aktif; }
-    public void setAktif(boolean aktif) { this.aktif = aktif; }
+    public void setSatuan(String satuan) {
+        this.satuan = satuan;
+    }
+
+    public int getStokMinimum() {
+        return stokMinimum;
+    }
+
+    public void setStokMinimum(int stokMinimum) {
+        this.stokMinimum = stokMinimum;
+    }
+
+    public boolean isDapatDiretur() {
+        return dapatDiretur;
+    }
+
+    public void setDapatDiretur(boolean dapatDiretur) {
+        this.dapatDiretur = dapatDiretur;
+    }
+
+    public double getStok() {
+        return stok;
+    }
+
+    public void setStok(double stok) {
+        this.stok = stok;
+    }
+
+    /**
+     * Kompatibilitas sementara dengan SmartCart lama.
+     * Produk dengan satuan kg atau liter dapat dijual pecahan.
+     */
+    public boolean isPerKg() {
+        return satuan != null
+                && (satuan.equalsIgnoreCase("kg")
+                || satuan.equalsIgnoreCase("liter"));
+    }
+
+    /**
+     * Kompatibilitas sementara.
+     * Jangan digunakan sebagai identitas produk baru.
+     */
+    @Deprecated
+public int getId() {
+    return legacyId;
+}
 
     @Override
     public String toString() {
-        return nama + " (" + kode + ")";
+        return nama + " (" + kodeBarang + ")";
     }
 }
