@@ -28,12 +28,15 @@ import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
 
+import com.smartmart.dao.ProdukDAO;
 import com.smartmart.model.Pegawai;
+import com.smartmart.model.SmartCart;
 import com.smartmart.service.LogAktivitasService;
 import com.smartmart.ui.admin.LogAktivitasPanel;
 import com.smartmart.ui.admin.PegawaiPanel;
-import com.smartmart.ui.admin.PersediaanPanel;
 import com.smartmart.ui.auth.Login;
+import com.smartmart.ui.kasir.TransaksiPanel;
+
 public class MainFrame extends JFrame {
 
     private final Pegawai pegawai;
@@ -734,14 +737,18 @@ public class MainFrame extends JFrame {
 
                 page = createSmartReturnPage();
 
-            }  else if ("Persediaan".equals(pageName)) {
+            } else if ("Transaksi".equals(pageName)) {
 
-                page = new PersediaanPanel(pegawai);
+                page = new TransaksiPanel(
+                        new ProdukDAO(),
+                        SmartCart.tanpaLot()
+                );
 
-                } else if ("Pegawai".equals(pageName)) {
+            } else if ("Pegawai".equals(pageName)) {
 
                 page = new PegawaiPanel(pegawai);
-                } else if ("Log Aktivitas".equals(pageName)) {
+
+            } else if ("Log Aktivitas".equals(pageName)) {
 
                 page = new LogAktivitasPanel(pegawai);
 
@@ -1069,7 +1076,8 @@ public class MainFrame extends JFrame {
             // Panel Pegawai dan Log Aktivitas
             // memiliki desain internal sendiri.
             if ("Pegawai".equals(pageName)
-                    || "Log Aktivitas".equals(pageName)) {
+                    || "Log Aktivitas".equals(pageName)
+                    || "Transaksi".equals(pageName)) {
                 continue;
             }
 
