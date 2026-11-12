@@ -14,7 +14,6 @@ import java.util.List;
 
 public class ReturDAO {
 
- 
     public static Connection buka() throws SQLException {
         return DatabaseConnection.getConnection();
     }
@@ -30,7 +29,6 @@ public class ReturDAO {
             + "LEFT JOIN pegawai pg ON pg.id_pegawai = t.id_pegawai "
             + "WHERE t.id_transaksi = ?";
 
-    /** Baris transaksi + jumlah yang sudah diretur sebelumnya (BR-35). */
     static final String SQL_BARIS =
             "SELECT d.id_detail_trx, d.kode_barang, pr.nama, pr.satuan, pr.dapat_diretur, "
             + "       d.id_lot, l.tgl_kedaluwarsa, d.jumlah, d.subtotal, d.sumber_diskon, "
@@ -53,7 +51,6 @@ public class ReturDAO {
 
     static final String SQL_ID_TERAKHIR = "SELECT last_insert_rowid()";
 
-    
     public Retur ambilTransaksi(Connection c, String idTransaksi) throws SQLException {
         Retur r = null;
         PreparedStatement ps = c.prepareStatement(SQL_TRANSAKSI);
@@ -116,7 +113,6 @@ public class ReturDAO {
         return hasil;
     }
 
-    
     public long simpan(Connection c, Retur r) throws SQLException {
         PreparedStatement ps = c.prepareStatement(SQL_INSERT_RETUR);
         try {
@@ -150,7 +146,6 @@ public class ReturDAO {
         return id;
     }
 
-   
     public int hitungRetur(Connection c, String idTransaksi) throws SQLException {
         PreparedStatement ps = c.prepareStatement(SQL_JUMLAH_RETUR);
         try {
