@@ -42,7 +42,7 @@ public class SmartCart {
      * dan FreshSave.hitungDiskon(lot). Lot kedaluwarsa tidak boleh ikut dikembalikan.
      */
     public interface LotSource {
-        List<LotInfo> ambilLotTerdekat(int produkId);
+        List<LotInfo> ambilLotTerdekat(String kodeBarang);
     }
 
     /**
@@ -50,7 +50,7 @@ public class SmartCart {
      * lotId = null (artinya "tanpa lot"), jadi aman bila disimpan ke kolom lot_id yang nullable.
      */
     public static LotSource tanpaLot() {
-        return produkId -> Collections.singletonList(new LotInfo(null, Double.MAX_VALUE, 0));
+        return kodeBarang -> Collections.singletonList(new LotInfo(null, Double.MAX_VALUE, 0));
     }
 
     private static final double EPS = 1e-9;
@@ -79,11 +79,11 @@ public class SmartCart {
         Map<Integer, Double> alokasi = new java.util.LinkedHashMap<>();
         Map<Integer, LotInfo> infoLot = new HashMap<>();
         double sisa = jumlah;
-        for (LotInfo lot : lotSource.ambilLotTerdekat(produk.getId())) {
+        for (LotInfo lot : lotSource.ambilLotTerdekat(produk.getKodeBarang())) {
             if (sisa <= EPS) {
                 break;
             }
-            double tersedia = lot.getSisaStok() - sudahDiKeranjang(produk.getId(), lot.getLotId());
+            double tersedia = lot.getSisaStok() - sudahDiKeranjang(produk.getKodeBarang(), lot.getLotId());
             if (tersedia <= EPS) {
                 continue;
             }
@@ -97,7 +97,7 @@ public class SmartCart {
         }
 
         for (Map.Entry<Integer, Double> e : alokasi.entrySet()) {
-            ItemKeranjang ada = cariBaris(produk.getId(), e.getKey());
+            ItemKeranjang ada = cariBaris(produk.getKodeBarang(), e.getKey());
             if (ada != null) {
                 ada.tambahJumlah(e.getValue());
             } else {
@@ -168,14 +168,14 @@ public class SmartCart {
         return total;
     }
 
-    private double sudahDiKeranjang(int produkId, Integer lotId) {
-        ItemKeranjang i = cariBaris(produkId, lotId);
+    private double sudahDiKeranjang(String kodeBarang, Integer lotId) {
+        ItemKeranjang i = cariBaris(kodeBarang, lotId);
         return i == null ? 0 : i.getJumlah();
     }
 
-    private ItemKeranjang cariBaris(int produkId, Integer lotId) {
+    private ItemKeranjang cariBaris(String kodeBarang, Integer lotId) {
         for (ItemKeranjang i : items) {
-            if (i.getProduk().getId() == produkId && Objects.equals(i.getLotId(), lotId)) {
+            if (Objects.equals(i.getProduk().getKodeBarang(), kodeBarang) && Objects.equals(i.getLotId(), lotId)) {
                 return i;
             }
         }
