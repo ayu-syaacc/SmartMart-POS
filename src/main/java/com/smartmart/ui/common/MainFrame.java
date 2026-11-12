@@ -32,8 +32,8 @@ import com.smartmart.model.Pegawai;
 import com.smartmart.service.LogAktivitasService;
 import com.smartmart.ui.admin.LogAktivitasPanel;
 import com.smartmart.ui.admin.PegawaiPanel;
+import com.smartmart.ui.admin.PersediaanPanel;
 import com.smartmart.ui.auth.Login;
-
 public class MainFrame extends JFrame {
 
     private final Pegawai pegawai;
@@ -734,11 +734,14 @@ public class MainFrame extends JFrame {
 
                 page = createSmartReturnPage();
 
-            } else if ("Pegawai".equals(pageName)) {
+            }  else if ("Persediaan".equals(pageName)) {
+
+                page = new PersediaanPanel(pegawai);
+
+                } else if ("Pegawai".equals(pageName)) {
 
                 page = new PegawaiPanel(pegawai);
-
-            } else if ("Log Aktivitas".equals(pageName)) {
+                } else if ("Log Aktivitas".equals(pageName)) {
 
                 page = new LogAktivitasPanel(pegawai);
 

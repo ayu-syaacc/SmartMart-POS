@@ -1,144 +1,197 @@
+
 package com.smartmart.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.smartmart.db.DatabaseConnection;
 import com.smartmart.model.Produk;
 
-
 /**
- * Akses data tabel produk (branch: feature/product-model).
- *
- * ASUMSI SKEMA (cocokkan dengan schema.sql milik Epi):
- *   produk(id INTEGER PK, kode TEXT UNIQUE, nama TEXT, kategori TEXT, harga INTEGER,
- *          per_kg INTEGER, stok_minimum INTEGER, aktif INTEGER)
- * ASUMSI: DatabaseConnection.getConnection() mengembalikan java.sql.Connection.
- *
- * cariKode, cariNama, dan ambilAktif hanya mengembalikan produk aktif (untuk kasir).
- * ambilSemua, tambah, ubah, dan nonaktifkan dipakai Salsa (Product Management).
+ * DAO untuk mengelola data produk SmartMart.
+ * Stok produk dihitung dari tabel stok_lot.
  */
 public class ProdukDAO {
 
-    private static final String KOLOM =
-            "id, kode, nama, kategori, harga, per_kg, stok_minimum, aktif";
+    private static final String QUERY_DASAR = """
+            SELECT
+                p.kode_barang,
+                p.nama,
+                p.harga,
+                p.satuan,
+                p.stok_minimum,
+                p.dapat_diretur,
+                COALESCE(SUM(s.jumlah_sisa), 0) AS stok
+            FROM produk p
+            LEFT JOIN stok_lot s
+                ON p.kode_barang = s.kode_barang
+            """;
 
-    public Produk cariKode(String kode) throws SQLException {
-        String sql = "SELECT " + KOLOM + " FROM produk WHERE kode = ? AND aktif = 1";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, kode.trim());
+    /**
+     * Mengambil seluruh produk beserta total stoknya.
+     */
+    public List<Produk> ambilSemua() throws SQLException {
+        String sql = QUERY_DASAR
+                + """
+                  GROUP BY p.kode_barang
+                  ORDER BY p.nama
+                  """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            return petakanSemua(rs);
+        }
+    }
+
+    /**
+     * Mencari produk berdasarkan kode barang.
+     */
+    public Produk cariKode(String kodeBarang) throws SQLException {
+        String sql = QUERY_DASAR
+                + """
+                  WHERE p.kode_barang = ?
+                  GROUP BY p.kode_barang
+                  """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, kodeBarang.trim());
+
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? petakan(rs) : null;
             }
         }
     }
 
+    /**
+     * Mencari produk berdasarkan nama.
+     */
     public List<Produk> cariNama(String kataKunci) throws SQLException {
-        String sql = "SELECT " + KOLOM + " FROM produk WHERE aktif = 1 "
-                + "AND nama LIKE ? ORDER BY nama";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        String sql = QUERY_DASAR
+                + """
+                  WHERE p.nama LIKE ?
+                  GROUP BY p.kode_barang
+                  ORDER BY p.nama
+                  """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, "%" + kataKunci.trim() + "%");
+
             try (ResultSet rs = ps.executeQuery()) {
                 return petakanSemua(rs);
             }
         }
     }
 
-    /** Produk aktif untuk grid kasir, boleh difilter kategori (null atau "Semua" = semua). */
-    public List<Produk> ambilAktif(String kategori) throws SQLException {
-        boolean semua = kategori == null || kategori.equalsIgnoreCase("Semua");
-        String sql = "SELECT " + KOLOM + " FROM produk WHERE aktif = 1"
-                + (semua ? "" : " AND kategori = ?") + " ORDER BY nama";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-            if (!semua) {
-                ps.setString(1, kategori);
-            }
-            try (ResultSet rs = ps.executeQuery()) {
-                return petakanSemua(rs);
-            }
-        }
-    }
+    /**
+     * Menambahkan produk baru.
+     * Stok awal tidak dimasukkan di sini karena stok dikelola melalui stok_lot.
+     */
+    public void tambah(Produk produk) throws SQLException {
+        String sql = """
+                INSERT INTO produk (
+                    kode_barang,
+                    nama,
+                    harga,
+                    satuan,
+                    stok_minimum,
+                    dapat_diretur
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+                """;
 
-    /** Semua produk termasuk yang nonaktif (untuk Product Management). */
-    public List<Produk> ambilSemua() throws SQLException {
-        String sql = "SELECT " + KOLOM + " FROM produk ORDER BY nama";
-        try (Connection c = DatabaseConnection.getConnection();
-             Statement st = c.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-            return petakanSemua(rs);
-        }
-    }
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-    /** Menambah produk, mengembalikan id baru. */
-    public int tambah(Produk p) throws SQLException {
-        String sql = "INSERT INTO produk (kode, nama, kategori, harga, per_kg, stok_minimum, aktif) "
-                + "VALUES (?, ?, ?, ?, ?, ?, 1)";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, p.getKode());
-            ps.setString(2, p.getNama());
-            ps.setString(3, p.getKategori());
-            ps.setLong(4, p.getHarga());
-            ps.setInt(5, p.isPerKg() ? 1 : 0);
-            ps.setInt(6, p.getStokMinimum());
-            ps.executeUpdate();
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                return keys.next() ? keys.getInt(1) : -1;
-            }
-        }
-    }
+            ps.setString(1, produk.getKodeBarang());
+            ps.setString(2, produk.getNama());
+            ps.setLong(3, produk.getHarga());
+            ps.setString(4, produk.getSatuan());
+            ps.setInt(5, produk.getStokMinimum());
+            ps.setInt(6, produk.isDapatDiretur() ? 1 : 0);
 
-    public void ubah(Produk p) throws SQLException {
-        String sql = "UPDATE produk SET kode = ?, nama = ?, kategori = ?, harga = ?, "
-                + "per_kg = ?, stok_minimum = ? WHERE id = ?";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, p.getKode());
-            ps.setString(2, p.getNama());
-            ps.setString(3, p.getKategori());
-            ps.setLong(4, p.getHarga());
-            ps.setInt(5, p.isPerKg() ? 1 : 0);
-            ps.setInt(6, p.getStokMinimum());
-            ps.setInt(7, p.getId());
             ps.executeUpdate();
         }
     }
 
-    /** Nonaktifkan (bukan hapus) agar riwayat transaksi lama tetap utuh. */
-    public void nonaktifkan(int id) throws SQLException {
-        String sql = "UPDATE produk SET aktif = 0 WHERE id = ?";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setInt(1, id);
+    /**
+     * Mengubah data produk.
+     * Kode lama digunakan sebagai identitas pencarian.
+     */
+    public void ubah(String kodeLama, Produk produk) throws SQLException {
+        String sql = """
+                UPDATE produk
+                SET kode_barang = ?,
+                    nama = ?,
+                    harga = ?,
+                    satuan = ?,
+                    stok_minimum = ?,
+                    dapat_diretur = ?
+                WHERE kode_barang = ?
+                """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, produk.getKodeBarang());
+            ps.setString(2, produk.getNama());
+            ps.setLong(3, produk.getHarga());
+            ps.setString(4, produk.getSatuan());
+            ps.setInt(5, produk.getStokMinimum());
+            ps.setInt(6, produk.isDapatDiretur() ? 1 : 0);
+            ps.setString(7, kodeLama);
+
+            ps.executeUpdate();
+        }
+    }
+
+    /**
+     * Menghapus produk.
+     * Jika produk sudah direferensikan oleh data lain, database akan menolak
+     * penghapusan ketika foreign key aktif.
+     */
+    public void hapus(String kodeBarang) throws SQLException {
+        String sql = "DELETE FROM produk WHERE kode_barang = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, kodeBarang);
             ps.executeUpdate();
         }
     }
 
     private List<Produk> petakanSemua(ResultSet rs) throws SQLException {
         List<Produk> hasil = new ArrayList<>();
+
         while (rs.next()) {
             hasil.add(petakan(rs));
         }
+
         return hasil;
     }
 
     private Produk petakan(ResultSet rs) throws SQLException {
-        return new Produk(
-                rs.getInt("id"),
-                rs.getString("kode"),
+        Produk produk = new Produk(
+                rs.getString("kode_barang"),
                 rs.getString("nama"),
-                rs.getString("kategori"),
                 rs.getLong("harga"),
-                rs.getInt("per_kg") == 1,
+                rs.getString("satuan"),
                 rs.getInt("stok_minimum"),
-                rs.getInt("aktif") == 1);
+                rs.getInt("dapat_diretur") == 1
+        );
+
+        produk.setStok(rs.getDouble("stok"));
+
+        return produk;
     }
 }
