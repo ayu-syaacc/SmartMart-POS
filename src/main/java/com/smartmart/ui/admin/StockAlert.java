@@ -1,781 +1,437 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-package com.mycompany.mavenproject3;
+package com.smartmart.ui.admin;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import static java.awt.Component.LEFT_ALIGNMENT;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
- *
- * @author User
+ * Layar StockAlert: ringkasan 5 kategori, tabel status lot, dan sidebar tindakan admin.
+ * Versi mandiri (Standalone) agar bebas error kompilasi.
  */
-public class StockAlert extends javax.swing.JFrame {
+public class StockAlert extends JFrame {
 
-    /**
-     * Creates new form StockAlert
-     */
-    public StockAlert() {
-        initComponents();
-        
-         String[] kolom = {
-        "Produk", "Lot", "Sisa Masa", "Jumlah", "Status"
-         };
-        
-        Object[][] data = {
-        {"Keju Slice", "E-019", "0 hari", 6, "KEDALUWARSA"},
-        {"Yoghurt Plain", "A-231", "1 hari", 30, "SEGERA"},
-        {"Roti Tawar", "B-118", "2 hari", 37, "PRIORITAS"},
-        {"Salad Sayur", "C-077", "3 hari", 18, "PRIORITAS"},
-        {"Daging Ayam", "D-042", "5 hari", 24, "PERHATIAN"},
-        {"Bayam Ikat", "C-081", "6 hari", 15, "PERHATIAN"},
-        {"Susu UHT 1L", "F-304", "120 hari", 8, "MENIPIS"}
-     };
-             jTable1.setModel(new javax.swing.table.DefaultTableModel(
-        data, kolom
-    ) {
+    // --- Warna & Tema UiKit ---
+    private static final Color BG = new Color(0xF3F6F4);
+    private static final Color CARD_BG = Color.WHITE;
+    private static final Color TEXT = new Color(0x14281F);
+    private static final Color MUTED = new Color(0x6B7C73);
+    private static final Color BORDER = new Color(0xE2E8E5);
+    private static final Color PRIMARY = new Color(0x0A6E50);
+    private static final Color DANGER = new Color(0xDC2626);
+    private static final Color ROW_ALT = new Color(0xF8FAFC);
+
+    // --- Model Internal Lot ---
+    private static class ItemLot {
+        String produk, lot, status;
+        int sisaHari, jumlah;
+
+        ItemLot(String produk, String lot, int sisaHari, int jumlah, String status) {
+            this.produk = produk;
+            this.lot = lot;
+            this.sisaHari = sisaHari;
+            this.jumlah = jumlah;
+            this.status = status;
+        }
+    }
+
+    private String pelaku = "Admin01";
+    private final List<ItemLot> data = new ArrayList<>();
+    private final JLabel[] lblRingkasan = new JLabel[5];
+    private final DefaultTableModel model = new DefaultTableModel(
+            new String[]{"Produk", "Lot", "Sisa masa", "Jumlah", "Status"}, 0) {
         @Override
-        public boolean isCellEditable(int row, int column) {
+        public boolean isCellEditable(int r, int c) {
             return false;
         }
-    });
+    };
+    private final JTable table = new JTable(model);
+
+    // Sidebar komponen
+    private final JPanel alertBox = new JPanel();
+    private final JLabel lblKondisi = label("Lot kedaluwarsa", Font.BOLD, 13f, DANGER);
+    private final JLabel lblDetail = label(" ", Font.PLAIN, 13f, TEXT);
+    private final JLabel lblBlokir = label("Penjualan diblokir otomatis.", Font.PLAIN, 12f, DANGER);
+    private final JButton btnBuang = dangerBtn("Buang lot");
+    private final JButton btnManual = outlineBtn("Kurangi stok manual");
+    private final JPanel formManual = new JPanel();
+    private final JLabel lblProdukLot = label(" ", Font.BOLD, 13f, TEXT);
+    private final JRadioButton rbRusak = new JRadioButton("Rusak", true);
+    private final JRadioButton rbHilang = new JRadioButton("Hilang");
+    private final JSpinner spJumlah = new JSpinner(new SpinnerNumberModel(1, 1, 1, 1));
+    private final JTextField tfAlasan = new JTextField(10);
+    private final JButton btnSimpan = primaryBtn("Simpan");
+
+    public StockAlert() {
+        setTitle("SmartMart POS - StockAlert");
+        setSize(1180, 720);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(BG);
+        root.setBorder(new EmptyBorder(20, 24, 20, 24));
+
+        // Header
+        String waktu = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm", new Locale("id", "ID")));
+        JPanel header = new JPanel(new GridLayout(2, 1, 0, 4));
+        header.setOpaque(false);
+        header.setBorder(new EmptyBorder(0, 0, 16, 0));
+        header.add(label("▲ StockAlert", Font.BOLD, 24f, TEXT));
+        header.add(label("Peringatan stok menipis dan status kedaluwarsa per lot  |  " + waktu, Font.PLAIN, 13f, MUTED));
+        root.add(header, BorderLayout.NORTH);
+
+        // Body
+        JPanel body = new JPanel(new BorderLayout(0, 16));
+        body.setOpaque(false);
+        body.add(buildSummary(), BorderLayout.NORTH);
+
+        JPanel center = new JPanel(new BorderLayout(16, 0));
+        center.setOpaque(false);
+        center.add(buildTable(), BorderLayout.CENTER);
+        center.add(buildSidebar(), BorderLayout.EAST);
+        body.add(center, BorderLayout.CENTER);
+        root.add(body, BorderLayout.CENTER);
+
+        setContentPane(root);
+
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) pilih();
+        });
+
+        muatDataAwal();
     }
-    
 
+    // ---------- Bangun UI ----------
+    private JPanel buildSummary() {
+        String[] judul = {"Aman (>7 hr)", "Perhatian (4-7 hr)", "Prioritas (2-3 hr)", "Segera (1 hr)", "Kedaluwarsa (0 hr)"};
+        Color[] bg = {new Color(0xDCFCE7), new Color(0xFEF08A), new Color(0xFED7AA), new Color(0xFECACA), new Color(0xEF4444)};
+        Color[] fg = {new Color(0x166534), new Color(0x854D0E), new Color(0x9A3412), new Color(0x991B1B), Color.WHITE};
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+        JPanel grid = new JPanel(new GridLayout(1, 5, 12, 0));
+        grid.setOpaque(false);
+        for (int i = 0; i < 5; i++) {
+            JPanel p = new JPanel();
+            p.setBackground(bg[i]);
+            p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+            p.setBorder(new EmptyBorder(14, 16, 14, 16));
 
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        jButton7 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        panelTindakanAdmin = new javax.swing.JPanel();
-        jLabel17 = new javax.swing.JLabel();
-        PanelLotKadalwarsa = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        jButton8 = new javax.swing.JButton();
-        jLabel21 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jLabel23 = new javax.swing.JLabel();
-        jLabel24 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jButton9 = new javax.swing.JButton();
-        jLabel25 = new javax.swing.JLabel();
+            JLabel t = label(judul[i], Font.PLAIN, 12f, fg[i]);
+            lblRingkasan[i] = label("0 lot", Font.BOLD, 24f, fg[i]);
+            t.setAlignmentX(LEFT_ALIGNMENT);
+            lblRingkasan[i].setAlignmentX(LEFT_ALIGNMENT);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+            p.add(t);
+            p.add(Box.createVerticalStrut(4));
+            p.add(lblRingkasan[i]);
+            grid.add(p);
+        }
+        return grid;
+    }
 
-        jPanel1.setBackground(new java.awt.Color(237, 243, 239));
+    private JPanel buildTable() {
+        table.setRowHeight(30);
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getColumnModel().getColumn(0).setPreferredWidth(200);
+        table.getColumnModel().getColumn(4).setPreferredWidth(140);
+        table.getColumnModel().getColumn(4).setCellRenderer(new BadgeCellRenderer());
 
-        jPanel2.setBackground(new java.awt.Color(10, 110, 80));
+        JPanel card = new JPanel(new BorderLayout(0, 10));
+        card.setBackground(CARD_BG);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER, 1),
+                new EmptyBorder(16, 16, 16, 16)));
+        card.add(label("Status lot", Font.BOLD, 15f, TEXT), BorderLayout.NORTH);
+        card.add(new JScrollPane(table), BorderLayout.CENTER);
+        return card;
+    }
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("SmartMart POS");
+    private JPanel buildSidebar() {
+        JPanel side = new JPanel();
+        side.setBackground(CARD_BG);
+        side.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER, 1),
+                new EmptyBorder(16, 18, 16, 18)));
+        side.setLayout(new BoxLayout(side, BoxLayout.Y_AXIS));
+        side.setPreferredSize(new Dimension(310, 0));
 
-        jButton1.setBackground(new java.awt.Color(242, 242, 242));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("RecelveCheck");
-        jButton1.setBorderPainted(false);
-        jButton1.setContentAreaFilled(false);
-        jButton1.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
+        addComp(side, label("Tindakan admin", Font.BOLD, 16f, TEXT), 12);
+
+        alertBox.setLayout(new BoxLayout(alertBox, BoxLayout.Y_AXIS));
+        alertBox.setBackground(new Color(0xFEF2F2));
+        alertBox.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(0xFECACA), 1),
+                new EmptyBorder(10, 12, 10, 12)));
+        alertBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
+        lblKondisi.setAlignmentX(LEFT_ALIGNMENT);
+        lblDetail.setAlignmentX(LEFT_ALIGNMENT);
+        lblBlokir.setAlignmentX(LEFT_ALIGNMENT);
+        alertBox.add(lblKondisi);
+        alertBox.add(Box.createVerticalStrut(4));
+        alertBox.add(lblDetail);
+        alertBox.add(Box.createVerticalStrut(4));
+        alertBox.add(lblBlokir);
+        addComp(side, alertBox, 12);
+
+        addComp(side, btnBuang, 8);
+        addComp(side, btnManual, 12);
+
+        // Form kurangi stok manual
+        formManual.setLayout(new BoxLayout(formManual, BoxLayout.Y_AXIS));
+        formManual.setOpaque(false);
+        formManual.setVisible(false);
+        formManual.setAlignmentX(LEFT_ALIGNMENT);
+        formManual.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER));
+
+        JPanel inner = new JPanel();
+        inner.setOpaque(false);
+        inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
+        inner.setBorder(new EmptyBorder(12, 0, 0, 0));
+
+        addComp(inner, label("Produk / lot", Font.PLAIN, 12f, MUTED), 2);
+        addComp(inner, lblProdukLot, 8);
+
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(rbRusak);
+        bg.add(rbHilang);
+        rbRusak.setOpaque(false);
+        rbHilang.setOpaque(false);
+
+        JPanel radios = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        radios.setOpaque(false);
+        radios.add(rbRusak);
+        radios.add(Box.createHorizontalStrut(14));
+        radios.add(rbHilang);
+        addComp(inner, radios, 8);
+
+        addComp(inner, label("Jumlah", Font.PLAIN, 12f, MUTED), 2);
+        spJumlah.setMaximumSize(new Dimension(120, 32));
+        addComp(inner, spJumlah, 8);
+
+        addComp(inner, label("Alasan (wajib)", Font.PLAIN, 12f, MUTED), 2);
+        tfAlasan.setToolTipText("Contoh: Kemasan sobek");
+        addComp(inner, tfAlasan, 12);
+        addComp(inner, btnSimpan, 0);
+
+        formManual.add(inner);
+        side.add(formManual);
+
+        side.add(Box.createVerticalGlue());
+        JLabel note = label("Tercatat otomatis di LossGuard (" + pelaku + ")", Font.ITALIC, 12f, MUTED);
+        note.setAlignmentX(LEFT_ALIGNMENT);
+        side.add(Box.createVerticalStrut(10));
+        side.add(note);
+
+        btnManual.addActionListener(e -> {
+            formManual.setVisible(!formManual.isVisible());
+            side.revalidate();
+            side.repaint();
         });
+        btnBuang.addActionListener(e -> buangLot());
+        btnSimpan.addActionListener(e -> simpanManual());
 
-        jButton2.setBackground(new java.awt.Color(242, 242, 242));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Dashboard");
-        jButton2.setBorderPainted(false);
-        jButton2.setContentAreaFilled(false);
-        jButton2.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        return side;
+    }
 
-        jButton3.setBackground(new java.awt.Color(242, 242, 242));
-        jButton3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Persediaan");
-        jButton3.setBorderPainted(false);
-        jButton3.setContentAreaFilled(false);
-        jButton3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    private static void addComp(JPanel parent, JComponent c, int gapBawah) {
+        c.setAlignmentX(LEFT_ALIGNMENT);
+        if (c instanceof JButton || c instanceof JTextField) {
+            c.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        }
+        parent.add(c);
+        if (gapBawah > 0) parent.add(Box.createVerticalStrut(gapBawah));
+    }
 
-        jButton4.setBackground(new java.awt.Color(153, 153, 153));
-        jButton4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(255, 255, 255));
-        jButton4.setText("StockAlert");
-        jButton4.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+    // ---------- Data & Logika ----------
+    private void muatDataAwal() {
+        data.clear();
+        data.add(new ItemLot("Keju Slice", "E-019", 0, 6, "KEDALUWARSA"));
+        data.add(new ItemLot("Yoghurt Plain", "A-231", 1, 30, "SEGERA"));
+        data.add(new ItemLot("Roti Tawar", "B-118", 2, 37, "PRIORITAS"));
+        data.add(new ItemLot("Salad Sayur", "C-077", 3, 18, "PRIORITAS"));
+        data.add(new ItemLot("Daging Ayam", "D-042", 5, 24, "PERHATIAN"));
+        data.add(new ItemLot("Bayam Ikat", "C-081", 6, 15, "PERHATIAN"));
+        data.add(new ItemLot("Susu UHT 1L", "F-304", 120, 8, "MENIPIS"));
+
+        updateKartuRingkasan();
+        isiTabel(0);
+    }
+
+    private void updateKartuRingkasan() {
+        int aman = 112, perhatian = 0, prioritas = 0, segera = 0, kedaluwarsa = 0;
+        for (ItemLot item : data) {
+            switch (item.status) {
+                case "PERHATIAN" -> perhatian++;
+                case "PRIORITAS" -> prioritas++;
+                case "SEGERA" -> segera++;
+                case "KEDALUWARSA" -> kedaluwarsa++;
             }
-        });
+        }
+        lblRingkasan[0].setText(aman + " lot");
+        lblRingkasan[1].setText(perhatian + " lot");
+        lblRingkasan[2].setText(prioritas + " lot");
+        lblRingkasan[3].setText(segera + " lot");
+        lblRingkasan[4].setText(kedaluwarsa + " lot");
+    }
 
-        jButton5.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jButton5.setForeground(new java.awt.Color(255, 255, 255));
-        jButton5.setText("LossGuard");
-        jButton5.setBorderPainted(false);
-        jButton5.setContentAreaFilled(false);
-        jButton5.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    private void isiTabel(int pilihIndex) {
+        model.setRowCount(0);
+        for (ItemLot a : data) {
+            model.addRow(new Object[]{a.produk, a.lot, a.sisaHari + " hari", a.jumlah, a.status});
+        }
+        if (!data.isEmpty()) {
+            int idx = Math.max(0, Math.min(pilihIndex, data.size() - 1));
+            table.setRowSelectionInterval(idx, idx);
+        } else {
+            pilih();
+        }
+    }
 
-        jButton6.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jButton6.setForeground(new java.awt.Color(255, 255, 255));
-        jButton6.setText("FreshSave");
-        jButton6.setBorderPainted(false);
-        jButton6.setContentAreaFilled(false);
-        jButton6.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    private ItemLot terpilih() {
+        int r = table.getSelectedRow();
+        return (r >= 0 && r < data.size()) ? data.get(r) : null;
+    }
 
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Admin01");
+    private void pilih() {
+        ItemLot a = terpilih();
+        boolean ada = a != null;
+        btnBuang.setEnabled(ada && "KEDALUWARSA".equals(a.status));
+        btnManual.setEnabled(ada);
+        btnSimpan.setEnabled(ada);
 
-        jButton7.setText("Logout");
+        if (!ada) {
+            lblKondisi.setText("Tidak ada lot");
+            lblDetail.setText(" ");
+            lblBlokir.setVisible(false);
+            lblProdukLot.setText(" ");
+            return;
+        }
 
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Administrator");
+        boolean expired = "KEDALUWARSA".equals(a.status);
+        lblKondisi.setText(expired ? "Lot kedaluwarsa" : "Lot " + a.status.toLowerCase());
+        lblKondisi.setForeground(expired || "SEGERA".equals(a.status) ? DANGER : TEXT);
+        lblDetail.setText(a.produk + ", lot " + a.lot + ", sisa " + a.jumlah);
+        lblBlokir.setVisible(expired);
+        alertBox.setBackground(expired ? new Color(0xFEF2F2) : ROW_ALT);
+        lblProdukLot.setText(a.produk + " " + a.lot);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3)
-                            .addComponent(jButton1)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jButton6)
-                                .addComponent(jButton5, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(59, 59, 59)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(24, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(34, 34, 34)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addGap(18, 18, 18)
-                .addComponent(jButton3)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addGap(18, 18, 18)
-                .addComponent(jButton4)
-                .addGap(18, 18, 18)
-                .addComponent(jButton5)
-                .addGap(18, 18, 18)
-                .addComponent(jButton6)
-                .addGap(96, 96, 96)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addGap(18, 18, 18)
-                .addComponent(jButton7)
-                .addGap(42, 42, 42))
-        );
+        int max = Math.max(1, a.jumlah);
+        spJumlah.setModel(new SpinnerNumberModel(Math.min(2, max), 1, max, 1));
+    }
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 26)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(20, 40, 31));
-        jLabel4.setText("StockAlert");
+    private void buangLot() {
+        ItemLot a = terpilih();
+        if (a == null) return;
+        int ok = JOptionPane.showConfirmDialog(this,
+                "Buang seluruh sisa " + a.jumlah + " unit " + a.produk + " (lot " + a.lot + ")?",
+                "Buang lot", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (ok != JOptionPane.YES_OPTION) return;
+        terapkan(a, "KEDALUWARSA", a.jumlah, "Lot kedaluwarsa dibuang oleh admin");
+    }
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(107, 124, 115));
-        jLabel5.setText("Peringatan stok menipis dan status kedaluwarsa per lot");
+    private void simpanManual() {
+        ItemLot a = terpilih();
+        if (a == null) return;
+        String alasan = tfAlasan.getText().trim();
+        if (alasan.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Alasan wajib diisi.", "Validasi", JOptionPane.WARNING_MESSAGE);
+            tfAlasan.requestFocus();
+            return;
+        }
+        String jenis = rbHilang.isSelected() ? "HILANG" : "RUSAK";
+        if (terapkan(a, jenis, (Integer) spJumlah.getValue(), alasan)) {
+            tfAlasan.setText("");
+        }
+    }
 
-        jPanel3.setBackground(new java.awt.Color(255, 233, 214));
+    private boolean terapkan(ItemLot a, String jenis, int n, String alasan) {
+        int idx = Math.max(0, table.getSelectedRow());
+        a.jumlah -= n;
+        if (a.jumlah <= 0) {
+            data.remove(a);
+        }
+        updateKartuRingkasan();
+        isiTabel(idx);
+        JOptionPane.showMessageDialog(this,
+                "Pengurangan " + n + " unit (" + jenis + ") tersimpan dan tercatat di LossGuard.\nAlasan: " + alasan,
+                "Berhasil", JOptionPane.INFORMATION_MESSAGE);
+        return true;
+    }
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(193, 87, 12));
-        jLabel6.setText("Prioritas (2-3 hari)");
+    // ---------- Helper Komponen UI ----------
+    private static JLabel label(String txt, int style, float size, Color color) {
+        JLabel l = new JLabel(txt);
+        l.setFont(new Font("Segoe UI", style, (int) size));
+        l.setForeground(color);
+        return l;
+    }
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(193, 87, 12));
-        jLabel7.setText("5 lot");
+    private static JButton primaryBtn(String txt) {
+        JButton b = new JButton(txt);
+        b.setBackground(PRIMARY);
+        b.setForeground(Color.WHITE);
+        b.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        b.setFocusPainted(false);
+        return b;
+    }
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel7)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+    private static JButton dangerBtn(String txt) {
+        JButton b = new JButton(txt);
+        b.setBackground(DANGER);
+        b.setForeground(Color.WHITE);
+        b.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        b.setFocusPainted(false);
+        return b;
+    }
 
-        jPanel4.setBackground(new java.awt.Color(191, 227, 203));
+    private static JButton outlineBtn(String txt) {
+        JButton b = new JButton(txt);
+        b.setBackground(Color.WHITE);
+        b.setForeground(TEXT);
+        b.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        b.setFocusPainted(false);
+        return b;
+    }
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(15, 145, 88));
-        jLabel8.setText("Aman (>7 hari)");
-
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(15, 145, 88));
-        jLabel9.setText("112 lot");
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(33, Short.MAX_VALUE))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9)
-                .addContainerGap())
-        );
-
-        jPanel5.setBackground(new java.awt.Color(255, 246, 204));
-
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(137, 105, 0));
-        jLabel10.setText("Perhatian (4-7 hari)");
-
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(137, 105, 0));
-        jLabel11.setText("9 lot");
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel11)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel6.setBackground(new java.awt.Color(192, 20, 60));
-
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setText("Kadalwarsa ( 0 hari)");
-
-        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel13.setText("2 lot");
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel12)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel13)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel7.setBackground(new java.awt.Color(253, 230, 236));
-
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(191, 19, 59));
-        jLabel14.setText("Segera ( 1 hari)");
-
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(191, 19, 59));
-        jLabel15.setText("3 lot");
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel14)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel15)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel16.setText("Status lot");
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Produk", "Lot", "Sisa Masa", "Jumlah", "Status"
+    private static class BadgeCellRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+            JLabel lbl = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+            lbl.setHorizontalAlignment(SwingConstants.CENTER);
+            lbl.setFont(new Font("Segoe UI", Font.BOLD, 11));
+            String st = String.valueOf(value);
+            if (!isSelected) {
+                switch (st) {
+                    case "KEDALUWARSA" -> { lbl.setBackground(new Color(0xFEE2E2)); lbl.setForeground(new Color(0x991B1B)); }
+                    case "SEGERA" -> { lbl.setBackground(new Color(0xFFEDD5)); lbl.setForeground(new Color(0x9A3412)); }
+                    case "PRIORITAS" -> { lbl.setBackground(new Color(0xFEF3C7)); lbl.setForeground(new Color(0x92400E)); }
+                    case "PERHATIAN" -> { lbl.setBackground(new Color(0xFEF9C3)); lbl.setForeground(new Color(0x854D0E)); }
+                    default -> { lbl.setBackground(new Color(0xE0F2FE)); lbl.setForeground(new Color(0x075985)); }
+                }
             }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
+            return lbl;
+        }
+    }
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable1.setColumnSelectionAllowed(true);
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-
-        panelTindakanAdmin.setBackground(new java.awt.Color(255, 255, 255));
-        panelTindakanAdmin.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(242, 242, 242)));
-
-        jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel17.setText("Tindakan admin");
-
-        PanelLotKadalwarsa.setBackground(new java.awt.Color(253, 230, 236));
-
-        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel18.setForeground(new java.awt.Color(191, 19, 59));
-        jLabel18.setText("Lot Kadalwarsa");
-
-        jLabel19.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jLabel19.setText("Keju Slice, lot E-019, sisa 6");
-
-        jLabel20.setText("Penjualan diblokir otomatis");
-
-        jButton8.setBackground(new java.awt.Color(233, 30, 77));
-        jButton8.setForeground(new java.awt.Color(255, 255, 255));
-        jButton8.setText("Buang lot");
-
-        javax.swing.GroupLayout PanelLotKadalwarsaLayout = new javax.swing.GroupLayout(PanelLotKadalwarsa);
-        PanelLotKadalwarsa.setLayout(PanelLotKadalwarsaLayout);
-        PanelLotKadalwarsaLayout.setHorizontalGroup(
-            PanelLotKadalwarsaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelLotKadalwarsaLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(PanelLotKadalwarsaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(PanelLotKadalwarsaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jButton8)
-                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(85, Short.MAX_VALUE))
-        );
-        PanelLotKadalwarsaLayout.setVerticalGroup(
-            PanelLotKadalwarsaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelLotKadalwarsaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel18)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel19)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel20)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton8)
-                .addContainerGap())
-        );
-
-        jLabel21.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel21.setText("Kurangi Stok Manual");
-
-        jLabel22.setForeground(new java.awt.Color(15, 145, 88));
-        jLabel22.setText("Produk / lot");
-
-        jTextField1.setBackground(new java.awt.Color(245, 249, 247));
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jTextField1.setText("Roti Tawar  B-118");
-
-        jRadioButton1.setForeground(new java.awt.Color(15, 145, 88));
-        jRadioButton1.setText("Rusak");
-
-        jRadioButton2.setForeground(new java.awt.Color(102, 102, 102));
-        jRadioButton2.setText("Hilang");
-
-        jLabel23.setForeground(new java.awt.Color(23, 59, 49));
-        jLabel23.setText("Jumlah");
-
-        jLabel24.setForeground(new java.awt.Color(23, 59, 49));
-        jLabel24.setText("Alasan");
-
-        jTextField2.setBackground(new java.awt.Color(245, 249, 247));
-        jTextField2.setText("2");
-
-        jTextField3.setBackground(new java.awt.Color(245, 249, 247));
-        jTextField3.setText("Kemasan sobek");
-
-        jButton9.setBackground(new java.awt.Color(17, 150, 91));
-        jButton9.setForeground(new java.awt.Color(255, 255, 255));
-        jButton9.setText("Simpan");
-
-        jLabel25.setForeground(new java.awt.Color(23, 59, 49));
-        jLabel25.setText("tersimpan di lossguard");
-
-        javax.swing.GroupLayout panelTindakanAdminLayout = new javax.swing.GroupLayout(panelTindakanAdmin);
-        panelTindakanAdmin.setLayout(panelTindakanAdminLayout);
-        panelTindakanAdminLayout.setHorizontalGroup(
-            panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(PanelLotKadalwarsa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                        .addGap(121, 121, 121)
-                        .addComponent(jButton9)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTindakanAdminLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTindakanAdminLayout.createSequentialGroup()
-                        .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                                        .addGap(21, 21, 21)
-                                        .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                                        .addGap(21, 21, 21)
-                                        .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(211, 211, 211))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTindakanAdminLayout.createSequentialGroup()
-                        .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(231, 231, 231))))
-        );
-        panelTindakanAdminLayout.setVerticalGroup(
-            panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel17)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(PanelLotKadalwarsa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel21)
-                .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel22))
-                    .addGroup(panelTindakanAdminLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel23)
-                    .addComponent(jLabel24))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelTindakanAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jButton9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel25)
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(panelTindakanAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addContainerGap(39, Short.MAX_VALUE))))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel16)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(panelTindakanAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(0, 19, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+    public static void main(String[] args) {
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(StockAlert.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(StockAlert.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(StockAlert.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(StockAlert.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new StockAlert().setVisible(true);
-            }
-        });
+        } catch (Exception ignored) {}
+        SwingUtilities.invokeLater(() -> new StockAlert().setVisible(true));
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel PanelLotKadalwarsa;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JPanel panelTindakanAdmin;
-    // End of variables declaration//GEN-END:variables
 }
