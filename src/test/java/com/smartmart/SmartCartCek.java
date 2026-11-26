@@ -21,15 +21,20 @@ public class SmartCartCek {
     }
 
     public static void main(String[] a) {
-        Produk susu = new Produk(1, "111", "Susu UHT 1L", "Susu", 17500, false, 10, true);
-        Produk apel = new Produk(2, "222", "Apel Fuji", "Segar", 48000, true, 5, true);
-        Produk roti = new Produk(3, "333", "Roti Tawar", "Makanan", 15000, false, 5, true);
+        Produk susu = new Produk("899100101", "Susu UHT 1L", "Susu", 17500, "PCS", 10, true, true);
+        Produk apel = new Produk("899100102", "Apel Fuji", "Segar", 48000, "KG", 10, false, true);
+        Produk roti = new Produk("899100103", "Roti Tawar", "Makanan", 15000, "PCS", 10, false, true);
 
-        SmartCart.LotSource sumber = id -> {
-            if (id == 3) return Arrays.asList(
+        cekTrue("apel dijual per kg (satuan KG)", apel.isPerKg());
+        cekTrue("susu bukan per kg (satuan PCS)", !susu.isPerKg());
+        cekTrue("produk baru otomatis aktif", susu.isAktif());
+        cekTrue("kategori kosong jadi Lainnya", new Produk("1", "X", "  ", 1, "PCS", 0, true, true).getKategori().equals("Lainnya"));
+
+        SmartCart.LotSource sumber = kode -> {
+            if (kode.equals(roti.getKodeBarang())) return Arrays.asList(
                     new SmartCart.LotInfo(30, 1, 20),   // lot hampir kedaluwarsa, sisa 1, FreshSave 20%
                     new SmartCart.LotInfo(31, 10, 0));  // lot normal
-            return Collections.singletonList(new SmartCart.LotInfo(id * 10, 100, 0));
+            return Collections.singletonList(new SmartCart.LotInfo(kode.hashCode() & 0xFFFF, 100, 0));
         };
 
         // Skenario mockup: member 10%

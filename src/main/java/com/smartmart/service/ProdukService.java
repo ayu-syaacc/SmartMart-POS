@@ -15,7 +15,7 @@ public class ProdukService {
         this.produkDAO = new ProdukDAO();
     }
 
-    // Mengambil seluruh produk beserta stoknya.
+    // Mengambil seluruh produk.
     public List<Produk> getAllProduk() throws SQLException {
         return produkDAO.ambilSemua();
     }
@@ -23,9 +23,7 @@ public class ProdukService {
     // Mencari produk berdasarkan kode barang.
     public Produk cariProduk(String kodeBarang) throws SQLException {
         if (kodeBarang == null || kodeBarang.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Kode barang wajib diisi."
-            );
+            throw new IllegalArgumentException("Kode barang wajib diisi.");
         }
 
         return produkDAO.cariKode(kodeBarang.trim());
@@ -50,29 +48,24 @@ public class ProdukService {
             boolean dapatDiretur
     ) throws SQLException {
 
-        validasiProduk(
-                kodeBarang,
-                nama,
-                harga,
-                satuan,
-                stokMinimum
-        );
+        validasiProduk(kodeBarang, nama, harga, satuan, stokMinimum);
 
         String kodeBersih = kodeBarang.trim();
 
-        if (produkDAO.cariKode(kodeBersih) != null) {
-            throw new IllegalArgumentException(
-                    "Kode barang sudah digunakan."
-            );
+        // Periksa juga produk nonaktif agar tidak terjadi benturan primary key.
+        if (produkDAO.ambilByKode(kodeBersih) != null) {
+            throw new IllegalArgumentException("Kode barang sudah digunakan.");
         }
 
         Produk produk = new Produk(
                 kodeBersih,
                 nama.trim(),
+                Produk.KATEGORI_DEFAULT,
                 harga,
                 satuan.trim(),
                 stokMinimum,
-                dapatDiretur
+                dapatDiretur,
+                true
         );
 
         produkDAO.tambah(produk);
@@ -90,67 +83,61 @@ public class ProdukService {
     ) throws SQLException {
 
         if (kodeLama == null || kodeLama.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Kode produk lama tidak valid."
-            );
+            throw new IllegalArgumentException("Kode produk lama tidak valid.");
         }
 
-        validasiProduk(
-                kodeBarang,
-                nama,
-                harga,
-                satuan,
-                stokMinimum
-        );
+        validasiProduk(kodeBarang, nama, harga, satuan, stokMinimum);
 
-        String kodeBaru = kodeBarang.trim();
         String kodeSebelumnya = kodeLama.trim();
+        String kodeBaru = kodeBarang.trim();
 
-        Produk ditemukan = produkDAO.cariKode(kodeSebelumnya);
-
-        if (ditemukan == null) {
+        if (!kodeBaru.equals(kodeSebelumnya)) {
             throw new IllegalArgumentException(
-                    "Produk tidak ditemukan."
+                    "Kode barang tidak dapat diubah."
             );
         }
 
-        if (!kodeBaru.equals(kodeSebelumnya)
-                && produkDAO.cariKode(kodeBaru) != null) {
-            throw new IllegalArgumentException(
-                    "Kode barang sudah digunakan produk lain."
-            );
+        Produk ditemukan = produkDAO.ambilByKode(kodeSebelumnya);
+
+        if (ditemukan == null || !ditemukan.isAktif()) {
+            throw new IllegalArgumentException("Produk tidak ditemukan atau sudah nonaktif.");
         }
 
+        // Kategori dan status aktif tetap dipertahankan.
         Produk produk = new Produk(
-                kodeBaru,
+                kodeSebelumnya,
                 nama.trim(),
+                ditemukan.getKategori(),
                 harga,
                 satuan.trim(),
                 stokMinimum,
-                dapatDiretur
+                dapatDiretur,
+                ditemukan.isAktif()
         );
 
-        produkDAO.ubah(kodeSebelumnya, produk);
+        if (!produkDAO.ubah(produk)) {
+            throw new IllegalArgumentException("Data produk gagal diperbarui.");
+        }
     }
 
-    // Menghapus produk.
+    // Menonaktifkan produk tanpa menghapus riwayatnya.
     public void hapusProduk(String kodeBarang) throws SQLException {
 
         if (kodeBarang == null || kodeBarang.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Pilih produk yang ingin dihapus."
-            );
+            throw new IllegalArgumentException("Pilih produk yang ingin dihapus.");
         }
 
-        Produk produk = produkDAO.cariKode(kodeBarang.trim());
+        String kodeBersih = kodeBarang.trim();
+
+        Produk produk = produkDAO.cariKode(kodeBersih);
 
         if (produk == null) {
-            throw new IllegalArgumentException(
-                    "Produk tidak ditemukan."
-            );
+            throw new IllegalArgumentException("Produk tidak ditemukan.");
         }
 
-        produkDAO.hapus(kodeBarang.trim());
+        if (!produkDAO.nonaktifkan(kodeBersih)) {
+            throw new IllegalArgumentException("Produk gagal dinonaktifkan.");
+        }
     }
 
     // Validasi seluruh data produk.
@@ -163,33 +150,30 @@ public class ProdukService {
     ) {
 
         if (kodeBarang == null || kodeBarang.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Kode barang wajib diisi."
-            );
+            throw new IllegalArgumentException("Kode barang wajib diisi.");
         }
 
         if (nama == null || nama.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Nama produk wajib diisi."
-            );
+            throw new IllegalArgumentException("Nama produk wajib diisi.");
         }
 
         if (harga < 0) {
-            throw new IllegalArgumentException(
-                    "Harga tidak boleh negatif."
-            );
+            throw new IllegalArgumentException("Harga tidak boleh negatif.");
         }
 
         if (satuan == null || satuan.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Satuan produk wajib diisi."
-            );
+            throw new IllegalArgumentException("Satuan produk wajib diisi.");
         }
 
         if (stokMinimum < 0) {
-            throw new IllegalArgumentException(
-                    "Stok minimum tidak boleh negatif."
-            );
+            throw new IllegalArgumentException("Stok minimum tidak boleh negatif.");
         }
     }
+
+
+    // Mengambil stok aktual produk dari seluruh stok lot.
+    public int getStokProduk(String kodeBarang) throws SQLException {
+        return produkDAO.hitungStok(kodeBarang);
+    }
+
 }

@@ -198,24 +198,27 @@ public class PersediaanPanel extends JPanel {
         }
     }
 
-    private void tampilkanData(List<Produk> daftarProduk) {
+    private void tampilkanData(List<Produk> daftarProduk)
+        throws SQLException {
 
-        modelTabel.setRowCount(0);
+    modelTabel.setRowCount(0);
 
-        for (Produk produk : daftarProduk) {
+    for (Produk produk : daftarProduk) {
 
-            modelTabel.addRow(new Object[] {
-                produk.getKodeBarang(),
-                produk.getNama(),
-                "Rp " + formatAngka.format(produk.getHarga()),
-                produk.getSatuan(),
-                formatAngka.format(produk.getStok()),
-                produk.getStokMinimum(),
-                produk.isDapatDiretur() ? "Ya" : "Tidak"
-            });
-        }
+        int stokAktual =
+                produkService.getStokProduk(produk.getKodeBarang());
+
+        modelTabel.addRow(new Object[] {
+            produk.getKodeBarang(),
+            produk.getNama(),
+            "Rp " + formatAngka.format(produk.getHarga()),
+            produk.getSatuan(),
+            formatAngka.format(stokAktual),
+            produk.getStokMinimum(),
+            produk.isDapatDiretur() ? "Ya" : "Tidak"
+        });
     }
-
+}
     // ==========================================
     // PENCARIAN
     // ==========================================
@@ -360,7 +363,7 @@ public class PersediaanPanel extends JPanel {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Produk berhasil dihapus.",
+                   "Produk berhasil dinonaktifkan.",
                     "Berhasil",
                     JOptionPane.INFORMATION_MESSAGE
             );
