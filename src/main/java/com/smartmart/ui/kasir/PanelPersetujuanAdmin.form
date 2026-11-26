@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="lblIkon">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblJudulDlg">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Persetujuan Admin"/>
+        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="22" style="1"/></Property>
+        <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblSubDlg">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Retur ..."/>
+        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="13" style="0"/></Property>
+        <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JPanel" name="pnlCatAtas">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Box(com.smartmart.ui.kasir.UiKit.RED_SOFT, 14)"/>
+      </AuxValues>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="1"/><Property name="rows" type="int" value="2"/></Layout>
+      <SubComponents>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="lblPwd">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Password admin"/>
+        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="0"/></Property>
+        <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JPanel" name="fldPwd">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.PasswordBox(com.smartmart.ui.kasir.UiKit.GREEN)"/>
+      </AuxValues>
+    </Component>
+    <Container class="javax.swing.JPanel" name="pnlCatBawah">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Box(com.smartmart.ui.kasir.UiKit.AMBER_BG, 14)"/>
+      </AuxValues>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="1"/><Property name="rows" type="int" value="2"/></Layout>
+      <SubComponents>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="lblGalat">
+      <Properties>
+        <Property name="text" type="java.lang.String" value=" "/>
+        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="1"/></Property>
+        <Property name="foreground" type="java.awt.Color"><Color blue="45" green="16" red="c8" type="rgb"/></Property>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JPanel" name="pnlTombol">
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="2"/><Property name="rows" type="int" value="1"/><Property name="horizontalGap" type="int" value="14"/></Layout>
+      <SubComponents>
+        <Component class="javax.swing.JButton" name="btnBatal">
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.tombolAbu("Batal")'/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnOk">
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.RoundButton("Setujui", null, com.smartmart.ui.kasir.UiKit.GREEN, java.awt.Color.WHITE, null)'/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="lblFooter">
+      <Properties>
+        <Property name="text" type="java.lang.String" value=" "/>
+        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="11" style="0"/></Property>
+        <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

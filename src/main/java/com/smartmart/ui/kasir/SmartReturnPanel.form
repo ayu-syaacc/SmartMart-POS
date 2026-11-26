@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="14"/></Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="pnlHeader">
+      <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="North"/></Constraint></Constraints>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="pnlJudulBlok">
+          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="West"/></Constraint></Constraints>
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="1"/><Property name="rows" type="int" value="2"/></Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="lblJudul">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="SmartReturn"/>
+                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="29" style="1"/></Property>
+                <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblSub">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Langkah 1 dari 3: cari transaksi asli"/>
+                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="14" style="0"/></Property>
+                <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Component class="javax.swing.JPanel" name="barInfo">
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.BarInfo()"/>
+          </AuxValues>
+          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="East"/></Constraint></Constraints>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="pnlIsi">
+      <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="pnlCari">
+          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription"><CardConstraints cardName="cari"/></Constraint></Constraints>
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="18"/></Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="kartuCari">
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Card()"/>
+              </AuxValues>
+              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="North"/></Constraint></Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="14"/></Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="pnlCariAtas">
+                  <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="North"/></Constraint></Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="lblCariJudul">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Cari transaksi"/>
+                        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="17" style="1"/></Property>
+                        <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                      </Properties>
+                    </Component>
+                    <Container class="javax.swing.JPanel" name="pnlChipsCari">
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"><Property name="alignment" type="int" value="0"/><Property name="horizontalGap" type="int" value="10"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JToggleButton" name="chipId">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.Chip("ID transaksi", com.smartmart.ui.kasir.UiKit.GREEN)'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JToggleButton" name="chipScan">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.Chip("Scan struk", com.smartmart.ui.kasir.UiKit.GREEN)'/>
+                          </AuxValues>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="pnlCariBaris">
+                  <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="16"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JPanel" name="fldCari">
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.SearchField("Masukkan ID transaksi asli", com.smartmart.ui.kasir.UiKit.Ikon.SEARCH, com.smartmart.ui.kasir.UiKit.GREEN)'/>
+                      </AuxValues>
+                      <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                    </Component>
+                    <Component class="javax.swing.JButton" name="btnCari">
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.tombolHijau("Cari", null)'/>
+                      </AuxValues>
+                      <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="East"/></Constraint></Constraints>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="pnlHasilTolak">
+              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="2"/><Property name="rows" type="int" value="1"/><Property name="horizontalGap" type="int" value="20"/></Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="kartuHasil">
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Card()"/>
+                  </AuxValues>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="14"/></Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="pnlHasilAtas">
+                      <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="North"/></Constraint></Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="pnlHasilJudul">
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Component class="javax.swing.JLabel" name="lblHasilJudul">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Hasil pencarian"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="17" style="1"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                              </Properties>
+                              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="West"/></Constraint></Constraints>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="badgeHasil">
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.Badge("DITEMUKAN", com.smartmart.ui.kasir.UiKit.GREEN_SOFT, com.smartmart.ui.kasir.UiKit.GREEN)'/>
+                              </AuxValues>
+                              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="East"/></Constraint></Constraints>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="pnlHasilBox">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Box(com.smartmart.ui.kasir.UiKit.ROW_BG, 20)"/>
+                          </AuxValues>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="10"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                          <SubComponents>
+                            <Container class="javax.swing.JPanel" name="pnlHasilKiri">
+                              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="1"/><Property name="rows" type="int" value="3"/><Property name="verticalGap" type="int" value="4"/></Layout>
+                              <SubComponents>
+                                <Component class="javax.swing.JLabel" name="hId">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" value="TRX-20261103-0042"/>
+                                    <Property name="font" type="java.awt.Font"><Font name="Poppins" size="16" style="1"/></Property>
+                                    <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="hInfo1">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" value="03 Nov 2026 16:20  |  Kasir01"/>
+                                    <Property name="font" type="java.awt.Font"><Font name="Poppins" size="11" style="0"/></Property>
+                                    <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="hInfo2">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" value="Siti Rahma  |  Tunai  |  3 item"/>
+                                    <Property name="font" type="java.awt.Font"><Font name="Poppins" size="11" style="0"/></Property>
+                                    <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                                  </Properties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="pnlHasilKanan">
+                              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="East"/></Constraint></Constraints>
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="1"/><Property name="rows" type="int" value="2"/><Property name="verticalGap" type="int" value="6"/></Layout>
+                              <SubComponents>
+                                <Component class="javax.swing.JLabel" name="hTotal">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" value="Rp95.400"/>
+                                    <Property name="font" type="java.awt.Font"><Font name="Poppins" size="20" style="1"/></Property>
+                                    <Property name="foreground" type="java.awt.Color"><Color blue="58" green="91" red="f" type="rgb"/></Property>
+                                    <Property name="horizontalAlignment" type="int" value="4"/>
+                                  </Properties>
+                                </Component>
+                                <Container class="javax.swing.JPanel" name="pnlStatusWrap">
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"><Property name="alignment" type="int" value="2"/><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                                  <SubComponents>
+                                    <Component class="javax.swing.JLabel" name="hStatus">
+                                      <AuxValues>
+                                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.badgeStatus("SELESAI")'/>
+                                      </AuxValues>
+                                    </Component>
+                                  </SubComponents>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Component class="javax.swing.JPanel" name="cek1">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.BarisValid("Masa retur", "Hari ke-1 dari maks. 3")'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JPanel" name="cek2">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.BarisValid("Struk / ID transaksi", "Ditemukan")'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JPanel" name="cek3">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.BarisValid("Belum pernah di-void", "Valid")'/>
+                          </AuxValues>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="pnlHasilBawah">
+                      <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="South"/></Constraint></Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JButton" name="btnLanjut">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.tombolHijau("Lanjut: Pilih Barang", null)'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="lblCatCari">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Retur diproses setelah admin menyetujui"/>
+                            <Property name="font" type="java.awt.Font"><Font name="Poppins" size="11" style="0"/></Property>
+                            <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                            <Property name="horizontalAlignment" type="int" value="0"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="kartuTolak">
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Card()"/>
+                  </AuxValues>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="14"/></Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="pnlTolakJudul">
+                      <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="North"/></Constraint></Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="lblTolakJudul">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Contoh penolakan otomatis"/>
+                            <Property name="font" type="java.awt.Font"><Font name="Poppins" size="17" style="1"/></Property>
+                            <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                          </Properties>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="West"/></Constraint></Constraints>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="badgeTolak">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.Badge("DITOLAK", com.smartmart.ui.kasir.UiKit.RED_SOFT, com.smartmart.ui.kasir.UiKit.RED_TEXT)'/>
+                          </AuxValues>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="East"/></Constraint></Constraints>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="pnlTolakList">
+                      <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JPanel" name="tolak1">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.kartuTolak("Lewat 3 hari", "Pembelian 12 Okt 2026, batas retur 3 hari sudah lewat.")'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JPanel" name="tolak2">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.kartuTolak("Barang tidak dapat diretur", "Sayur, buah, yoghurt, roti, dan produk cepat basi.")'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JPanel" name="tolak3">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.kartuTolak("Dibeli dengan diskon FreshSave", "Barang FreshSave tidak dapat diretur.")'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JPanel" name="tolak4">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.kartuTolak("Jumlah melebihi pembelian", "Dibeli 2, sudah diretur 1, sisa maks. 1.")'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JPanel" name="tolak5">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.kartuTolak("Tanpa struk atau ID transaksi", "Masukkan ID transaksi asli untuk melanjutkan.")'/>
+                          </AuxValues>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="pnlPilih">
+          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription"><CardConstraints cardName="pilih"/></Constraint></Constraints>
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="20"/><Property name="verticalGap" type="int" value="0"/></Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="kartuBarang">
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Card()"/>
+              </AuxValues>
+              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="12"/></Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="pnlBarangAtas">
+                  <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="North"/></Constraint></Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="lblValidasi">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Validasi otomatis"/>
+                        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="17" style="1"/></Property>
+                        <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                      </Properties>
+                    </Component>
+                    <Container class="javax.swing.JPanel" name="pnlTiga">
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="3"/><Property name="rows" type="int" value="1"/><Property name="horizontalGap" type="int" value="12"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JPanel" name="cekA">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.BarisValid("Masa retur", "Hari ke-1 dari maks. 3")'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JPanel" name="cekB">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.BarisValid("Struk / ID transaksi", "Ditemukan")'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JPanel" name="cekC">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.BarisValid("Jumlah retur", "Tidak melebihi pembelian")'/>
+                          </AuxValues>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Component class="javax.swing.JLabel" name="lblPilih">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Pilih barang yang diretur"/>
+                        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="17" style="1"/></Property>
+                        <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                      </Properties>
+                    </Component>
+                    <Container class="javax.swing.JPanel" name="pnlKepalaBarang">
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Box(com.smartmart.ui.kasir.UiKit.HEADER_BG, 14)"/>
+                      </AuxValues>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"><Property name="alignment" type="int" value="0"/><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                      <SubComponents>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="pnlBarang">
+                  <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"><Property name="alignment" type="int" value="0"/><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                  <SubComponents>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="pnlBarangBawah">
+                  <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="South"/></Constraint></Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="lblPesan">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Pesan penolakan otomatis ditampilkan untuk barang yang tidak memenuhi syarat."/>
+                        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="11" style="0"/></Property>
+                        <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JPanel" name="pnlCatatan">
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.catatanKuning("Perlu persetujuan Admin", "Retur diproses setelah admin memasukkan password.", true, 420)'/>
+                      </AuxValues>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="kartuRetur">
+              <Properties>
+                <Property name="preferredSize" type="java.awt.Dimension"><Dimension value="[372, 0]"/></Property>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Card()"/>
+              </AuxValues>
+              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="East"/></Constraint></Constraints>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="12"/></Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="pnlReturAtas">
+                  <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="North"/></Constraint></Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="lblDetailRetur">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Detail retur"/>
+                        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="17" style="1"/></Property>
+                        <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="lblAlasan">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Alasan"/>
+                        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="0"/></Property>
+                        <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                      </Properties>
+                    </Component>
+                    <Container class="javax.swing.JPanel" name="pnlChipsAlasan">
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"><Property name="alignment" type="int" value="0"/><Property name="horizontalGap" type="int" value="8"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JToggleButton" name="chipSalah">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.Chip("Salah beli", com.smartmart.ui.kasir.UiKit.GREEN)'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JToggleButton" name="chipRusak">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.Chip("Kemasan rusak", com.smartmart.ui.kasir.UiKit.GREEN)'/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JToggleButton" name="chipLain">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='new com.smartmart.ui.kasir.UiKit.Chip("Lainnya", com.smartmart.ui.kasir.UiKit.GREEN)'/>
+                          </AuxValues>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Component class="javax.swing.JLabel" name="lblKondisi">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Kondisi barang"/>
+                        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="0"/></Property>
+                        <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                      </Properties>
+                    </Component>
+                    <Container class="javax.swing.JPanel" name="pnlKond1">
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="12"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JToggleButton" name="cbBelum">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.CentangBox(22, true)"/>
+                          </AuxValues>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="West"/></Constraint></Constraints>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="lblKond1">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Belum digunakan"/>
+                            <Property name="font" type="java.awt.Font"><Font name="Poppins" size="13" style="0"/></Property>
+                            <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                          </Properties>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="pnlKond2">
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="12"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JToggleButton" name="cbUtuh">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.CentangBox(22, true)"/>
+                          </AuxValues>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="West"/></Constraint></Constraints>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="lblKond2">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Kemasan utuh"/>
+                            <Property name="font" type="java.awt.Font"><Font name="Poppins" size="13" style="0"/></Property>
+                            <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                          </Properties>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="pnlKond3">
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="12"/><Property name="verticalGap" type="int" value="0"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JToggleButton" name="cbLayak">
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.CentangBox(22, true)"/>
+                          </AuxValues>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="West"/></Constraint></Constraints>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="lblKond3">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Layak jual kembali"/>
+                            <Property name="font" type="java.awt.Font"><Font name="Poppins" size="13" style="0"/></Property>
+                            <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                          </Properties>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="pnlRingkasan">
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.smartmart.ui.kasir.UiKit.Box(com.smartmart.ui.kasir.UiKit.ROW_BG, 18)"/>
+                      </AuxValues>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"><Property name="horizontalGap" type="int" value="0"/><Property name="verticalGap" type="int" value="8"/></Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="lblRingkasan">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Ringkasan refund"/>
+                            <Property name="font" type="java.awt.Font"><Font name="Poppins" size="13" style="1"/></Property>
+                            <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                          </Properties>
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="North"/></Constraint></Constraints>
+                        </Component>
+                        <Container class="javax.swing.JPanel" name="pnlRingkasGrid">
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="Center"/></Constraint></Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout"><Property name="columns" type="int" value="2"/><Property name="rows" type="int" value="3"/><Property name="verticalGap" type="int" value="8"/></Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JLabel" name="lblBarangT">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Barang"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="0"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="rBarang">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="-"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="1"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                                <Property name="horizontalAlignment" type="int" value="4"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="lblMetodeT">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Metode"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="0"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="rMetode">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Tunai"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="1"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                                <Property name="horizontalAlignment" type="int" value="4"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="lblPoinT">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Poin member"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="0"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="rPoin">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="-"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="1"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="1d" green="26" red="13" type="rgb"/></Property>
+                                <Property name="horizontalAlignment" type="int" value="4"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="pnlRefund">
+                          <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="South"/></Constraint></Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Component class="javax.swing.JLabel" name="lblRefundT">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Refund"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="12" style="0"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                              </Properties>
+                              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="West"/></Constraint></Constraints>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="rRefund">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Rp0"/>
+                                <Property name="font" type="java.awt.Font"><Font name="Poppins" size="22" style="1"/></Property>
+                                <Property name="foreground" type="java.awt.Color"><Color blue="58" green="91" red="f" type="rgb"/></Property>
+                                <Property name="horizontalAlignment" type="int" value="4"/>
+                              </Properties>
+                              <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="East"/></Constraint></Constraints>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="pnlReturBawah">
+                  <Constraints><Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription"><BorderConstraints direction="South"/></Constraint></Constraints>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"><Property name="axis" type="int" value="3"/></Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JButton" name="btnAjukan">
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.tombolHijau("Ajukan Retur", null)'/>
+                      </AuxValues>
+                    </Component>
+                    <Component class="javax.swing.JButton" name="btnBatalRetur">
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value='com.smartmart.ui.kasir.UiKit.tombolAbu("Batal")'/>
+                      </AuxValues>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="lblStok">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Stok layak kembali ke lot asal"/>
+                        <Property name="font" type="java.awt.Font"><Font name="Poppins" size="11" style="0"/></Property>
+                        <Property name="foreground" type="java.awt.Color"><Color blue="72" green="7a" red="6b" type="rgb"/></Property>
+                        <Property name="horizontalAlignment" type="int" value="0"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>
